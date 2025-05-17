@@ -3,7 +3,9 @@ const model = defineModel<boolean>();
 </script>
 
 <template>
-  <button id="button" :class="{checked: model}" @click="model = !model;"><slot /></button>
+  <button id="button" :class="{ checked: model }" @click="model = !model">
+    <slot />
+  </button>
 </template>
 
 <style scoped>

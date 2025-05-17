@@ -1,13 +1,15 @@
-import {CountTable, db, PlayerTable} from "../db";
-import {Insertable, Updateable} from "kysely";
-import {Temporal} from "temporal-polyfill";
+import { CountTable, db, PlayerTable } from "../db";
+import { Insertable, Updateable } from "kysely";
+import { Temporal } from "temporal-polyfill";
 
 async function currentPlayerList(): Promise<string[]> {
   const runtimeConfig = useRuntimeConfig();
 
-  const res = await (await fetch(runtimeConfig.trackerConfig.dynmapLink)).json() as {players: {account: string}[]};
-  const playerNames = res.players.map(a => a.account)
-  return await Promise.all(playerNames.map(a => nameToUUID(a)))
+  const res = (await (
+    await fetch(runtimeConfig.trackerConfig.dynmapLink)
+  ).json()) as { players: { account: string }[] };
+  const playerNames = res.players.map((a) => a.account);
+  return await Promise.all(playerNames.map((a) => nameToUUID(a)));
 }
 
 function thisMinute(): Temporal.ZonedDateTime {
@@ -20,10 +22,18 @@ function getCountEntry(playerList: string[]): Insertable<CountTable> {
   return {
     timestamp: thisMinute(),
     all: playerList.length,
-    categories: Object.fromEntries((Object.entries(runtimeConfig.trackerConfig.categories) as [string, string[]][]).map(([cat, list]) => {
-      return [cat, playerList.filter(a => list.includes(a)).length]
-    }))
-  }
+    categories: Object.fromEntries(
+      (
+        Object.entries(runtimeConfig.trackerConfig.categories) as [
+          string,
+          string[],
+        ][]
+      ).map(([cat, list]) => [
+        cat,
+        playerList.filter((a) => list.includes(a)).length,
+      ]),
+    ),
+  };
 }
 
 export default defineTask({
@@ -32,11 +42,9 @@ export default defineTask({
   },
   async run() {
     const playerList = await currentPlayerList();
-    await db.insertInto("counts")
-      .values(getCountEntry(playerList))
-      .execute();
+    await db.insertInto("counts").values(getCountEntry(playerList)).execute();
     // TODO: find previous entry, and do updates from it
 
-    return {result: "success"}
-  }
-})
+    return { result: "success" };
+  },
+});

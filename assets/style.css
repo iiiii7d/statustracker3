@@ -1,85 +1,85 @@
 @import url("https://fonts.googleapis.com/css2?family=Nunito&display=swap");
 
 :root {
-    color-scheme: dark;
+  color-scheme: dark;
 }
 
 body {
-    background-color: #222;
-    color: #ccc;
-    font-family: "Nunito", sans-serif !important;
+  background-color: #222;
+  color: #ccc;
+  font-family: "Nunito", sans-serif !important;
 }
 
 hr {
-    border: 1px solid #555;
-    margin-top: 25px;
-    margin-bottom: 25px;
+  border: 1px solid #555;
+  margin-top: 25px;
+  margin-bottom: 25px;
 }
 
 a {
-    color: #fc0;
-    transition: all 0.1s ease;
+  color: #fc0;
+  transition: all 0.1s ease;
 
-    &:hover {
-        color: #f80;
-    }
+  &:hover {
+    color: #f80;
+  }
 }
 
 b,
 strong {
-    font-weight: bolder;
-    color: #fff;
+  font-weight: bolder;
+  color: #fff;
 }
 
 input {
-    background-color: unset;
-    color: #ccc;
-    border: 0px;
-    border-bottom: 1px solid white;
-    color-scheme: dark;
-    transition: all 0.1s ease;
+  background-color: unset;
+  color: #ccc;
+  border: 0px;
+  border-bottom: 1px solid white;
+  color-scheme: dark;
+  transition: all 0.1s ease;
 
-    &:hover {
-        border-bottom: 1px solid #fc0;
-        color: #fc0;
-    }
+  &:hover {
+    border-bottom: 1px solid #fc0;
+    color: #fc0;
+  }
 
-    &:focus {
-        outline: none;
-        border-bottom: 1px solid #f80;
-        color: #f80;
-    }
+  &:focus {
+    outline: none;
+    border-bottom: 1px solid #f80;
+    color: #f80;
+  }
 
-    &[type="text"] {
-        font-family: "Nunito", sans-serif;
-    }
+  &[type="text"] {
+    font-family: "Nunito", sans-serif;
+  }
 }
 
 button {
-    font-family: "Nunito", sans-serif;
-    background-color: #555;
-    color: #fff;
-    border: unset;
-    border-radius: 5px;
-    box-shadow: #5558 0px 3px;
-    transition: all 0.1s ease;
+  font-family: "Nunito", sans-serif;
+  background-color: #555;
+  color: #fff;
+  border: unset;
+  border-radius: 5px;
+  box-shadow: #5558 0px 3px;
+  transition: all 0.1s ease;
 
-    &:hover {
-        background-color: #fc0;
-        color: #111;
-        box-shadow: #fc08 0px 4px;
-        transform: translateY(-1px);
-    }
+  &:hover {
+    background-color: #fc0;
+    color: #111;
+    box-shadow: #fc08 0px 4px;
+    transform: translateY(-1px);
+  }
 
-    &:active {
-        background-color: #f80 !important;
-        box-shadow: #f808 0px 0px !important;
-        transform: translateY(3px);
-        color: #111;
-    }
+  &:active {
+    background-color: #f80 !important;
+    box-shadow: #f808 0px 0px !important;
+    transform: translateY(3px);
+    color: #111;
+  }
 }
 
 input:not([type="text"]):hover,
 button:hover {
-    cursor: pointer;
+  cursor: pointer;
 }
