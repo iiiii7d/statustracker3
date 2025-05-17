@@ -9,9 +9,10 @@ export interface CountTable {
 }
 
 export interface PlayerTable {
+  id: Generated<number>;
   uuid: string;
   join: Temporal.ZonedDateTime;
-  left: Temporal.ZonedDateTime | null;
+  leave: Temporal.ZonedDateTime | null;
 }
 
 export interface Database {

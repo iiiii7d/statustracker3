@@ -42,8 +42,47 @@ export default defineTask({
   },
   async run() {
     const playerList = await currentPlayerList();
-    await db.insertInto("counts").values(getCountEntry(playerList)).execute();
-    // TODO: find previous entry, and do updates from it
+
+    await db.transaction().execute(async (trx) => {
+      await trx
+        .insertInto("counts")
+        .values(getCountEntry(playerList))
+        .execute();
+      await Promise.all(
+        playerList.map(async (player) => {
+          const existing = await trx
+            .selectFrom("players")
+            .where("uuid", "=", player)
+            .where("leave", "=", null)
+            .executeTakeFirst();
+          if (existing === undefined) {
+            await trx
+              .insertInto("players")
+              .values({
+                uuid: player,
+                join: thisMinute(),
+                leave: null,
+              })
+              .execute();
+          }
+        }),
+      );
+      await Promise.all(
+        (
+          await trx
+            .selectFrom("players")
+            .select("id")
+            .where("leave", "=", null)
+            .execute()
+        ).map(async (result) => {
+          await trx
+            .updateTable("players")
+            .set({ leave: thisMinute() })
+            .where("id", "=", result.id)
+            .execute();
+        }),
+      );
+    });
 
     return { result: "success" };
   },
