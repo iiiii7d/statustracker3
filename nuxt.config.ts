@@ -1,6 +1,7 @@
 import pkg from "./package.json"
 import * as fs from "node:fs";
 
+// eslint-disable-next-line init-declarations
 let trackerConfig;
 try {
   trackerConfig = JSON.parse(fs.readFileSync(process.env.CONFIG_PATH ?? "config.json").toString())
@@ -8,7 +9,12 @@ try {
   trackerConfig = {
     categories: {},
     dynmapLink: "https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json",
-    dbUri: ""
+    db: {
+      database: "statustracker",
+      host: "localhost",
+      user: "admin",
+      port: 1234,
+    },
   } as Config
 }
 

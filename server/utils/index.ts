@@ -1,9 +1,11 @@
+import {PoolConfig} from "pg";
+
 const cache = new Map<string, string>();
 
-export type Config = {
+export interface Config {
   categories: Record<string, string[]>,
   dynmapLink: string,
-  dbUri: string,
+  db: PoolConfig,
 }
 
 export async function nameToUUID(name: string): Promise<string> {

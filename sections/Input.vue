@@ -7,19 +7,19 @@ const runtimeConfig = useRuntimeConfig();
 const defaultFrom = Temporal.Now.zonedDateTimeISO().subtract(Temporal.Duration.from({days: 1}))
 const defaultTo = Temporal.Now.zonedDateTimeISO().add(Temporal.Duration.from({minutes: 1}))
 
-let from = defaultFrom.toString().slice(0, 16)
-let to = defaultTo.toString().slice(0, 16)
-let player = ""
-let loading = 0;
+const from = defaultFrom.toString().slice(0, 16)
+const to = defaultTo.toString().slice(0, 16)
+const player = ""
+const loading = 0;
 </script>
 
 <template>
   <b style="font-size: 1.5em; color: #fc0">StatusTracker v{{ runtimeConfig.public.clientVersion }}&nbsp;&nbsp;|&nbsp;&nbsp;</b>
 
   <span>Show activity</span>
-  <label for="from">from </label><input type="datetime-local" id="from" v-model="from"/>
-  <label for="to">to </label><input type="datetime-local" id="to" v-model="to" />
-  <label for="player">for player </label><input type="text" id="player" v-model="player" placeholder="username"/>
+  <label for="from">from </label><input id="from" v-model="from" type="datetime-local"/>
+  <label for="to">to </label><input id="to" v-model="to" type="datetime-local" />
+  <label for="player">for player </label><input id="player" v-model="player" type="text" placeholder="username"/>
   <button onclick={query}>Query</button><br>
 
   <span v-if="loading !== 0" id="player-stats">Loading...</span>
