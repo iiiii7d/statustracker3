@@ -13,16 +13,17 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@nuxt/eslint": "1.4.1",
     "chart.js": "^4.4.9",
     "chartjs-plugin-annotation": "^3.1.0",
     "kysely": "^0.28.2",
-    "nuxt": "^3.17.3",
+    "nuxt": "^3.17.4",
     "pg": "^8.16.0",
     "temporal-polyfill": "^0.3.0",
     "vue": "^3.5.14",
     "vue-chartjs": "^5.3.2",
     "vue-router": "^4.5.1",
-    "zod": "^3.25.7"
+    "zod": "^3.25.8"
   },
   "packageManager": "pnpm@10.11.0+sha512.6540583f41cc5f628eb3d9773ecee802f4f9ef9923cc45b69890fb47991d4b092964694ec3a4f738a420c918a333062c8b925d312f42e4f0c263eb603551f977",
   "devDependencies": {

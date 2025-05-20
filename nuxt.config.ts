@@ -26,6 +26,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-05-15",
   devtools: { enabled: true },
   css: ["./assets/style.css"],
+
   nitro: {
     experimental: {
       tasks: true,
@@ -34,11 +35,14 @@ export default defineNuxtConfig({
       "* * * * *": ["updateCount"],
     },
   },
+
   runtimeConfig: {
     trackerConfig,
     public: {
       clientVersion: pkg.version,
     },
   },
+
   components: ["~/sections", "~/components"],
+  modules: ["@nuxt/eslint"]
 });

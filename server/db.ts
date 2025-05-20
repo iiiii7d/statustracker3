@@ -20,9 +20,7 @@ export interface Database {
   players: PlayerTable;
 }
 
-pgTypes.setTypeParser(pgTypes.builtins.TIMESTAMPTZ, (val) => {
-  return Temporal.ZonedDateTime.from(val);
-});
+pgTypes.setTypeParser(pgTypes.builtins.TIMESTAMPTZ, (val) => Temporal.ZonedDateTime.from(val));
 
 const runtimeConfig = useRuntimeConfig();
 export const db = new Kysely<Database>({

@@ -6,9 +6,11 @@ import pluginVue from "eslint-plugin-vue";
 import prettierConfig from "eslint-config-prettier";
 import tseslint from "typescript-eslint";
 import vueParser from "vue-eslint-parser";
+import withNuxt from "./.nuxt/eslint.config.mjs";
 
-export default tseslint.config(
+export default withNuxt(
   pluginJs.configs.all,
+  // @ts-expect-error
   ...tseslint.configs.strict,
   ...tseslint.configs.stylistic,
   ...pluginVue.configs["flat/essential"],
