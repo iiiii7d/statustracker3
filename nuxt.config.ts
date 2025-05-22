@@ -2,15 +2,15 @@ import pkg from "./package.json";
 import * as fs from "node:fs";
 
 // eslint-disable-next-line init-declarations
-let trackerConfig;
+let config: Config;
 try {
-  trackerConfig = JSON.parse(
+  config = JSON.parse(
     fs.readFileSync(process.env.CONFIG_PATH ?? "config.json").toString(),
   );
 } catch {
-  trackerConfig = {
+  config = {
     categories: {
-      test: ["3b95b88fcee947549f965a5866ecf773"],
+      test: { uuids: ["3b95b88fcee947549f965a5866ecf773"], colour: "#ff0000" },
     },
     dynmapLink:
       "https://api.allorigins.win/raw?url=https%3A//dynmap.minecartrapidtransit.net/main/standalone/dynmap_new.json",
@@ -20,7 +20,8 @@ try {
       user: "user",
       port: 5432,
     },
-  } as Config;
+    deleteOldCategories: false,
+  };
 }
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -39,9 +40,12 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    trackerConfig,
+    dynmapLink: config.dynmapLink,
+    db: config.db,
+    deleteOldCategories: config.deleteOldCategories ? "1" : "",
     public: {
       clientVersion: pkg.version,
+      categories: config.categories,
     },
   },
 

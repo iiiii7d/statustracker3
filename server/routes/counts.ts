@@ -1,12 +1,15 @@
-import { db } from "~/server/db";
+import { Database, db } from "~/server/db";
 import { Temporal } from "temporal-polyfill";
 import { z } from "zod/v4";
+import { sql } from "kysely";
 
 const schema = z.object({
   from: z.string(),
   to: z.string().optional(),
-  category: z.string().optional(),
-  movingAverage: z.number().gte(0).default(0),
+  movingAverage: z.preprocess(
+    (a) => (typeof a === "string" ? parseInt(a) : a),
+    z.int().gte(0).default(0),
+  ),
 });
 
 export default defineEventHandler(async (event) => {
@@ -23,21 +26,29 @@ export default defineEventHandler(async (event) => {
       statusMessage: "`to` is earlier than `from`, switch it around",
     });
   }
-  if (
-    query.category !== undefined &&
-    !Object.keys(runtimeConfig.trackerConfig.categories).includes(
-      query.category,
-    )
-  ) {
-    throw createError({ statusCode: 400, statusMessage: "invalid category" });
-  }
+
+  const ma = `${query.movingAverage} hours`;
 
   return await db
     .selectFrom("counts")
+    .select("timestamp")
     .select(
-      (query.category === undefined
+      query.movingAverage === 0
         ? "all"
-        : `categories->${query.category}`) as never,
+        : (sql<number>`(AVG("all") OVER (ORDER BY timestamp RANGE BETWEEN ${ma} PRECEDING AND ${ma} FOLLOWING))::real`.as(
+            "all",
+          ) as never),
+    )
+    .select(
+      Object.keys(runtimeConfig.public.categories).map((n) => {
+        if (query.movingAverage === 0) {
+          return `cat_${n}`;
+        }
+        const catRef = sql.ref(`cat_${n}`);
+        return sql<number>`(AVG(${catRef}) OVER (ORDER BY timestamp RANGE BETWEEN ${ma} PRECEDING AND ${ma} FOLLOWING))::real`.as(
+          `cat_${n}`,
+        );
+      }) as never,
     )
     .where((eb) =>
       eb.between("timestamp", temporalToString(from), temporalToString(to)),

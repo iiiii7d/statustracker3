@@ -4,7 +4,7 @@ import { Pool } from "pg";
 export interface CountTable {
   timestamp: Generated<string>;
   all: number;
-  categories: Record<string, number>;
+  [key: `cat_${string}`]: number;
 }
 
 export interface PlayerTable {
@@ -28,12 +28,12 @@ export interface Database {
 const runtimeConfig = useRuntimeConfig();
 export const db = new Kysely<Database>({
   dialect: new PostgresDialect({
-    pool: new Pool(runtimeConfig.trackerConfig.db),
+    pool: new Pool(runtimeConfig.db),
   }),
 });
 
 db.transaction()
-  // eslint-disable-next-line max-lines-per-function
+  // eslint-disable-next-line max-lines-per-function,max-statements
   .execute(async (trx) => {
     // 3.0.0
     if (
@@ -51,7 +51,6 @@ db.transaction()
           col.defaultTo(sql`now()`).primaryKey(),
         )
         .addColumn("all", "int2", (col) => col.check(sql`"all" >= 0`).notNull())
-        .addColumn("categories", "jsonb", (col) => col.notNull())
         .execute();
 
       await trx.schema
@@ -61,7 +60,7 @@ db.transaction()
         .addColumn("uuid", "uuid", (col) => col.notNull())
         .addColumn("join", "timestamptz", (col) => col.notNull())
         .addColumn("leave", "timestamptz", (col) =>
-          col.check(sql`leave IS NULL OR "join" < leave`),
+          col.check(sql`leave IS NULL OR "join" <= leave`),
         )
         .execute();
 
@@ -84,6 +83,48 @@ db.transaction()
           version: "3.0.0",
         })
         .execute();
+    }
+
+    // new categories
+    const currentTableNames = (
+      await sql<{
+        column_name: string;
+      }>`SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = 'counts'`.execute(
+        trx,
+      )
+    ).rows
+      .map((n) => n.column_name)
+      .filter((n) => n.startsWith("cat_"))
+      .map((n) => n.slice(4));
+    const currentCategories = Object.keys(runtimeConfig.public.categories);
+
+    const newTableNames = currentCategories.filter(
+      (n) => !currentTableNames.includes(n),
+    );
+    await Promise.all(
+      newTableNames.map(async (n) => {
+        const catRef = sql.ref<string>(`cat_${n}`);
+        await trx.schema
+          .alterTable("counts")
+          .addColumn(`cat_${n}`, "int2", (col) =>
+            col.check(sql`${catRef} IS NULL OR ${catRef} >= 0`).defaultTo(null),
+          )
+          .execute();
+      }),
+    );
+
+    if (runtimeConfig.deleteOldCategories) {
+      const oldTableNames = currentTableNames.filter(
+        (n) => !currentCategories.includes(n),
+      );
+      await Promise.all(
+        oldTableNames.map(async (n) => {
+          await trx.schema
+            .alterTable("counts")
+            .dropColumn(`cat_${n}`)
+            .execute();
+        }),
+      );
     }
   })
   .then();

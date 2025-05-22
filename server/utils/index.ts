@@ -1,12 +1,18 @@
 import { PoolConfig } from "pg";
 import { Temporal } from "temporal-polyfill";
 
+// https://stackoverflow.com/questions/60141960/typescript-key-value-relation-preserving-object-entries-type
+export type Entries<T> = {
+  [K in keyof T]: [K, T[K]];
+}[keyof T][];
+
 const cache = new Map<string, string>();
 
 export interface Config {
-  categories: Record<string, string[]>;
+  categories: Record<string, { uuids: string[]; colour: string }>;
   dynmapLink: string;
   db: PoolConfig;
+  deleteOldCategories: boolean;
 }
 
 export async function nameToUUID(name: string): Promise<string> {

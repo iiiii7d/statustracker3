@@ -1,16 +1,16 @@
 import { Database, db } from "../db";
-import { Transaction } from "kysely";
+import { sql, Transaction } from "kysely";
 import { Temporal } from "temporal-polyfill";
 
 async function currentPlayerList(): Promise<string[]> {
   const runtimeConfig = useRuntimeConfig();
   console.log(
-    `Retrieving current player list from ${runtimeConfig.trackerConfig.dynmapLink}`,
+    `Retrieving current player list from ${runtimeConfig.dynmapLink}`,
   );
 
-  const res = (await (
-    await fetch(runtimeConfig.trackerConfig.dynmapLink)
-  ).json()) as { players: { account: string }[] };
+  const res = (await (await fetch(runtimeConfig.dynmapLink)).json()) as {
+    players: { account: string }[];
+  };
   const playerNames = res.players.map((a) => a.account);
   const playerUuids = await Promise.all(playerNames.map((a) => nameToUUID(a)));
   console.log("Retrieval of current player list successful");
@@ -19,6 +19,11 @@ async function currentPlayerList(): Promise<string[]> {
 
 function currentTimestamp(): string {
   return temporalToString(Temporal.Now.zonedDateTimeISO().round("minute"));
+}
+function previousTimestamp(): string {
+  return temporalToString(
+    Temporal.Now.zonedDateTimeISO().round("minute").subtract({ minutes: 1 }),
+  );
 }
 
 async function updateCounts(trx: Transaction<Database>, playerList: string[]) {
@@ -30,15 +35,14 @@ async function updateCounts(trx: Transaction<Database>, playerList: string[]) {
     .values({
       timestamp: currentTimestamp(),
       all: playerList.length,
-      categories: Object.fromEntries(
+      ...Object.fromEntries(
         (
-          Object.entries(runtimeConfig.trackerConfig.categories) as [
-            string,
-            string[],
-          ][]
-        ).map(([cat, list]) => [
-          cat,
-          playerList.filter((a) => list.includes(a)).length,
+          Object.entries(runtimeConfig.public.categories) as Entries<
+            Config["categories"]
+          >
+        ).map(([cat, { uuids }]) => [
+          `cat_${cat}`,
+          playerList.filter((a) => uuids.includes(a)).length,
         ]),
       ),
     })
@@ -94,6 +98,31 @@ async function updatePlayersLeave(
   );
 }
 
+async function closePlayerEntriesIfPaused(trx: Transaction<Database>) {
+  if (
+    (await trx
+      .selectFrom("counts")
+      .where("timestamp", "=", previousTimestamp())
+      .executeTakeFirst()) !== undefined
+  )
+    return;
+
+  console.log("Server was paused. Completing last player entries");
+  const { timestamp: lastTimestamp } = (await trx
+    .selectFrom("counts")
+    .select("timestamp")
+    .orderBy("timestamp", "desc")
+    .executeTakeFirst())!;
+
+  await trx
+    .updateTable("players")
+    .where("leave", "is", null)
+    .set({
+      leave: sql`${lastTimestamp}::timestamptz + INTERVAL '1 min'`,
+    })
+    .execute();
+}
+
 export default defineTask({
   meta: {
     name: "updateCount",
@@ -103,6 +132,8 @@ export default defineTask({
 
     await db.transaction().execute(async (trx) => {
       await updateCounts(trx, playerList);
+
+      await closePlayerEntriesIfPaused(trx);
 
       await updatePlayersJoin(trx, playerList);
       await updatePlayersLeave(trx, playerList);
