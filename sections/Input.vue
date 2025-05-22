@@ -3,12 +3,8 @@ import CheckboxButton from "~/components/CheckboxButton.vue";
 import { Temporal } from "temporal-polyfill";
 const runtimeConfig = useRuntimeConfig();
 
-const defaultFrom = Temporal.Now.zonedDateTimeISO().subtract(
-  Temporal.Duration.from({ days: 1 }),
-);
-const defaultTo = Temporal.Now.zonedDateTimeISO().add(
-  Temporal.Duration.from({ minutes: 1 }),
-);
+const defaultFrom = Temporal.Now.zonedDateTimeISO().subtract({ days: 1 });
+const defaultTo = Temporal.Now.zonedDateTimeISO().add({ minutes: 1 });
 
 const from = defaultFrom.toString().slice(0, 16);
 const to = defaultTo.toString().slice(0, 16);

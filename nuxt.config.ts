@@ -9,14 +9,16 @@ try {
   );
 } catch {
   trackerConfig = {
-    categories: {},
+    categories: {
+      test: ["3b95b88fcee947549f965a5866ecf773"],
+    },
     dynmapLink:
-      "https://dynmap.minecartrapidtransit.net/standalone/dynmap_new.json",
+      "https://api.allorigins.win/raw?url=https%3A//dynmap.minecartrapidtransit.net/main/standalone/dynmap_new.json",
     db: {
-      database: "statustracker",
+      database: "statustracker3",
       host: "localhost",
-      user: "admin",
-      port: 1234,
+      user: "user",
+      port: 5432,
     },
   } as Config;
 }

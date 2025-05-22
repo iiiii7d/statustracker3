@@ -3,8 +3,8 @@ import { Temporal } from "temporal-polyfill";
 import { z } from "zod/v4";
 
 const schema = z.object({
-  from: z.iso.datetime({ offset: true, local: false }),
-  to: z.iso.datetime({ offset: true, local: false }),
+  from: z.string(),
+  to: z.string().optional(),
   category: z.string().optional(),
   movingAverage: z.number().gte(0).default(0),
 });
@@ -13,8 +13,11 @@ export default defineEventHandler(async (event) => {
   const runtimeConfig = useRuntimeConfig();
   const query = await getValidatedQuery(event, (body) => schema.parse(body));
   const from = Temporal.ZonedDateTime.from(query.from);
-  const to = Temporal.ZonedDateTime.from(query.to);
-  if (to < from) {
+  const to =
+    query.to === undefined
+      ? Temporal.Now.zonedDateTimeISO().add({ minutes: 1 })
+      : Temporal.ZonedDateTime.from(query.to);
+  if (Temporal.ZonedDateTime.compare(from, to) === 1) {
     throw createError({
       statusCode: 400,
       statusMessage: "`to` is earlier than `from`, switch it around",
@@ -36,7 +39,9 @@ export default defineEventHandler(async (event) => {
         ? "all"
         : `categories->${query.category}`) as never,
     )
-    .where((eb) => eb.between("timestamp", from, to))
+    .where((eb) =>
+      eb.between("timestamp", temporalToString(from), temporalToString(to)),
+    )
     .orderBy("timestamp", "asc")
     .execute();
 });

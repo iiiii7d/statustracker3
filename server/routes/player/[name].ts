@@ -3,8 +3,8 @@ import { Temporal } from "temporal-polyfill";
 import { z } from "zod/v4";
 
 const schema = z.object({
-  from: z.iso.datetime({ offset: true, local: false }),
-  to: z.iso.datetime({ offset: true, local: false }),
+  from: z.string(),
+  to: z.string().optional(),
 });
 
 export default defineEventHandler(async (event) => {
@@ -12,8 +12,11 @@ export default defineEventHandler(async (event) => {
 
   const query = await getValidatedQuery(event, (body) => schema.parse(body));
   const from = Temporal.ZonedDateTime.from(query.from);
-  const to = Temporal.ZonedDateTime.from(query.to);
-  if (to < from) {
+  const to =
+    query.to === undefined
+      ? Temporal.Now.zonedDateTimeISO().add({ minutes: 1 })
+      : Temporal.ZonedDateTime.from(query.to);
+  if (Temporal.ZonedDateTime.compare(from, to) === 1) {
     throw createError({
       statusCode: 400,
       statusMessage: "`to` is earlier than `from`, switch it around",
@@ -24,7 +27,10 @@ export default defineEventHandler(async (event) => {
     .selectFrom("players")
     .select(["join", "leave"])
     .where((eb) =>
-      eb.or([eb.between("join", from, to), eb.between("leave", from, to)]),
+      eb.or([
+        eb.between("join", temporalToString(from), temporalToString(to)),
+        eb.between("leave", temporalToString(from), temporalToString(to)),
+      ]),
     )
     .where("uuid", "=", await nameToUUID(player))
     .orderBy("join", "asc")
