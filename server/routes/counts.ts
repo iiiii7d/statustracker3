@@ -1,4 +1,4 @@
-import { Database, db } from "~/server/db";
+import { db } from "~/server/db";
 import { Temporal } from "temporal-polyfill";
 import { z } from "zod/v4";
 import { sql } from "kysely";

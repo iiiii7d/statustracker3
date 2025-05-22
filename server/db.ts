@@ -48,7 +48,7 @@ db.transaction()
         .createTable("counts")
         .ifNotExists()
         .addColumn("timestamp", "timestamptz", (col) =>
-          col.defaultTo(sql`now()`).primaryKey(),
+          col.defaultTo(currentTimestamp).primaryKey(),
         )
         .addColumn("all", "int2", (col) => col.check(sql`"all" >= 0`).notNull())
         .execute();

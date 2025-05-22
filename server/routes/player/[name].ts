@@ -1,12 +1,14 @@
 import { db } from "~/server/db";
 import { Temporal } from "temporal-polyfill";
 import { z } from "zod/v4";
+import { sql } from "kysely";
 
 const schema = z.object({
   from: z.string(),
   to: z.string().optional(),
 });
 
+// eslint-disable-next-line max-lines-per-function,max-statements
 export default defineEventHandler(async (event) => {
   const player = getRouterParam(event, "name")!;
 
@@ -22,8 +24,9 @@ export default defineEventHandler(async (event) => {
       statusMessage: "`to` is earlier than `from`, switch it around",
     });
   }
+  const uuid = await nameToUUID(player);
 
-  return await db
+  const playTimesP = await db
     .selectFrom("players")
     .select(["join", "leave"])
     .where((eb) =>
@@ -32,7 +35,52 @@ export default defineEventHandler(async (event) => {
         eb.between("leave", temporalToString(from), temporalToString(to)),
       ]),
     )
-    .where("uuid", "=", await nameToUUID(player))
+    .where("uuid", "=", uuid)
     .orderBy("join", "asc")
     .execute();
+
+  const playDurationP = db
+    .with("ft", (qc) =>
+      qc
+        .selectFrom("players")
+        .select((eb) =>
+          eb
+            .case()
+            .when("leave", "is", null)
+            .then(currentTimestamp)
+            .when("leave", ">", currentTimestamp)
+            .then(currentTimestamp)
+            .when("leave", ">", temporalToString(to))
+            .then(temporalToString(to))
+            .else(sql.ref("leave"))
+            .end()
+            .as("leave"),
+        )
+        .select((eb) =>
+          eb
+            .case()
+            .when("join", "<", temporalToString(from))
+            .then(temporalToString(from))
+            .else(sql.ref("join"))
+            .end()
+            .as("join"),
+        )
+        .where("uuid", "=", uuid),
+    )
+    .selectFrom("ft")
+    .select(
+      sql`(EXTRACT(EPOCH FROM SUM(ft.leave - ft."join"))/60)::int`.as(
+        "playDuration",
+      ),
+    )
+    .executeTakeFirstOrThrow();
+  const [playTimes, { playDuration }] = await Promise.all([
+    playTimesP,
+    playDurationP,
+  ]);
+
+  return {
+    playTimes,
+    playDuration,
+  };
 });

@@ -1,6 +1,5 @@
 import { Database, db } from "../db";
 import { sql, Transaction } from "kysely";
-import { Temporal } from "temporal-polyfill";
 
 async function currentPlayerList(): Promise<string[]> {
   const runtimeConfig = useRuntimeConfig();
@@ -17,15 +16,6 @@ async function currentPlayerList(): Promise<string[]> {
   return playerUuids;
 }
 
-function currentTimestamp(): string {
-  return temporalToString(Temporal.Now.zonedDateTimeISO().round("minute"));
-}
-function previousTimestamp(): string {
-  return temporalToString(
-    Temporal.Now.zonedDateTimeISO().round("minute").subtract({ minutes: 1 }),
-  );
-}
-
 async function updateCounts(trx: Transaction<Database>, playerList: string[]) {
   const runtimeConfig = useRuntimeConfig();
 
@@ -33,7 +23,7 @@ async function updateCounts(trx: Transaction<Database>, playerList: string[]) {
   await trx
     .insertInto("counts")
     .values({
-      timestamp: currentTimestamp(),
+      timestamp: currentTimestamp,
       all: playerList.length,
       ...Object.fromEntries(
         (
@@ -66,7 +56,7 @@ async function updatePlayersJoin(
           .insertInto("players")
           .values({
             uuid: player,
-            join: currentTimestamp(),
+            join: currentTimestamp,
             leave: null,
           })
           .execute();
@@ -91,7 +81,7 @@ async function updatePlayersLeave(
     ).map(async (result) => {
       await trx
         .updateTable("players")
-        .set({ leave: currentTimestamp() })
+        .set({ leave: currentTimestamp })
         .where("id", "=", result.id)
         .execute();
     }),
@@ -102,17 +92,17 @@ async function closePlayerEntriesIfPaused(trx: Transaction<Database>) {
   if (
     (await trx
       .selectFrom("counts")
-      .where("timestamp", "=", previousTimestamp())
+      .where("timestamp", "=", previousTimestamp)
       .executeTakeFirst()) !== undefined
   )
     return;
 
   console.log("Server was paused. Completing last player entries");
-  const { timestamp: lastTimestamp } = (await trx
+  const { timestamp: lastTimestamp } = await trx
     .selectFrom("counts")
     .select("timestamp")
     .orderBy("timestamp", "desc")
-    .executeTakeFirst())!;
+    .executeTakeFirstOrThrow();
 
   await trx
     .updateTable("players")
