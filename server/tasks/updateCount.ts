@@ -102,6 +102,7 @@ async function closePlayerEntriesIfPaused(trx: Transaction<Database>) {
     .selectFrom("counts")
     .select("timestamp")
     .orderBy("timestamp", "desc")
+    .where("timestamp", "!=", currentTimestamp)
     .executeTakeFirstOrThrow();
 
   await trx

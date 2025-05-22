@@ -2,11 +2,6 @@ import { PoolConfig } from "pg";
 import { Temporal } from "temporal-polyfill";
 import { sql } from "kysely";
 
-// https://stackoverflow.com/questions/60141960/typescript-key-value-relation-preserving-object-entries-type
-export type Entries<T> = {
-  [K in keyof T]: [K, T[K]];
-}[keyof T][];
-
 export const currentTimestamp = sql<string>`date_trunc('minute', now())`;
 export const previousTimestamp = sql<string>`date_trunc('minute', now() - INTERVAL '1 minute')`;
 
