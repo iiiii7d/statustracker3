@@ -43,20 +43,29 @@ const playDuration = computed(() =>
         minutes: player.value.playDuration % 60,
       }),
 );
+
+const mobile = ref(false);
+onMounted(() => {
+  mobile.value = window.innerWidth < 800;
+  window.addEventListener("resize", () => {
+    mobile.value = window.innerWidth < 800;
+  });
+});
 </script>
 
 <template>
-  <b style="font-size: 1.5em; color: #fc0"
-    >StatusTracker v{{
-      runtimeConfig.public.clientVersion
-    }}&nbsp;&nbsp;|&nbsp;&nbsp;</b
-  >
+  <b style="font-size: 1.5em; color: #fc0">
+    StatusTracker v{{ runtimeConfig.public.clientVersion
+    }}<span v-if="!mobile">&nbsp;&nbsp;|&nbsp;&nbsp;</span><br v-else />
+  </b>
 
   <label for="from">Show activity from </label
   ><input id="from" v-model="inputFrom" type="datetime-local" />
+  <br v-if="mobile" />
 
   <label for="to">to </label
   ><input id="to" v-model="inputTo" type="datetime-local" />
+  <br v-if="mobile" />
 
   <label for="player">for player </label
   ><input
@@ -65,7 +74,7 @@ const playDuration = computed(() =>
     type="text"
     placeholder="username"
   />
-
+  &nbsp;
   <button @click="query">Query</button><br />
 
   <span v-if="loading !== 0" id="player-stats">Loading...</span>

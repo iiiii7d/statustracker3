@@ -34,7 +34,7 @@ strong {
 input {
   background-color: unset;
   color: #ccc;
-  border: 0px;
+  border: 0;
   border-bottom: 1px solid white;
   color-scheme: dark;
   transition: all 0.1s ease;
@@ -61,19 +61,19 @@ button {
   color: #fff;
   border: unset;
   border-radius: 5px;
-  box-shadow: #5558 0px 3px;
+  box-shadow: #5558 0 3px;
   transition: all 0.1s ease;
 
   &:hover {
     background-color: #fc0;
     color: #111;
-    box-shadow: #fc08 0px 4px;
+    box-shadow: #fc08 0 4px;
     transform: translateY(-1px);
   }
 
   &:active {
     background-color: #f80 !important;
-    box-shadow: #f808 0px 0px !important;
+    box-shadow: #f808 0 0 !important;
     transform: translateY(3px);
     color: #111;
   }

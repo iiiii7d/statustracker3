@@ -140,9 +140,18 @@ const chartData = computed<ChartData<"line", Point[]>>(() => ({
     }),
 }));
 
+const windowInnerWidth = ref(1000);
+onMounted(() => {
+  windowInnerWidth.value = window.innerWidth;
+  window.addEventListener("resize", () => {
+    windowInnerWidth.value = window.innerWidth;
+  });
+});
+
 // eslint-disable-next-line max-lines-per-function
 const chartOptions = computed<ChartOptions<"line">>(() => ({
   animation: false,
+  aspectRatio: windowInnerWidth.value / 750,
   plugins: {
     annotation: {
       common: {
