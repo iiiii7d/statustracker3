@@ -144,7 +144,7 @@ db.transaction()
     }
 
     // delete old webhook schedules
-    if (runtimeConfig.webhooks !== undefined) {
+    if (runtimeConfig.webhooks !== "") {
       const webhookConfig = useWebhookConfig();
       await trx
         .deleteFrom("webhooks")
