@@ -1,39 +1,44 @@
 import { db } from "~/server/db";
-import { Temporal } from "temporal-polyfill";
 import { z } from "zod/v4";
 import { sql } from "kysely";
+import * as df from "date-fns";
 
 const schema = z.object({
-  from: z.string(),
-  to: z.string().optional(),
+  from: z.iso
+    .datetime({ local: false, offset: true })
+    .transform((a) => df.parseISO(a)),
+  to: z.iso
+    .datetime({ local: false, offset: true })
+    .transform((a) => df.parseISO(a))
+    .default(new Date()),
 });
 
 // eslint-disable-next-line max-lines-per-function,max-statements
 export default defineEventHandler(async (event) => {
   const player = getRouterParam(event, "name")!;
 
-  const query = await getValidatedQuery(event, (body) => schema.parse(body));
-  const from = Temporal.ZonedDateTime.from(query.from);
-  const to =
-    query.to === undefined
-      ? Temporal.Now.zonedDateTimeISO().add({ minutes: 1 })
-      : Temporal.ZonedDateTime.from(query.to);
-  if (Temporal.ZonedDateTime.compare(from, to) === 1) {
+  const { from, to } = await getValidatedQuery(event, (body) =>
+    schema.parse(body),
+  );
+  if (df.compareAsc(from, to) === 1) {
     throw createError({
       statusCode: 400,
       statusMessage: "`to` is earlier than `from`, switch it around",
     });
   }
   const uuid = await nameToUUID(player);
+  if (uuid === null) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: `no UUID for ${player}`,
+    });
+  }
 
   const playTimesP = await db
     .selectFrom("players")
     .select(["join", "leave"])
     .where((eb) =>
-      eb.or([
-        eb.between("join", temporalToString(from), temporalToString(to)),
-        eb.between("leave", temporalToString(from), temporalToString(to)),
-      ]),
+      eb.or([eb.between("join", from, to), eb.between("leave", from, to)]),
     )
     .where("uuid", "=", uuid)
     .orderBy("join", "asc")
@@ -50,8 +55,8 @@ export default defineEventHandler(async (event) => {
             .then(currentTimestamp)
             .when("leave", ">", currentTimestamp)
             .then(currentTimestamp)
-            .when("leave", ">", temporalToString(to))
-            .then(temporalToString(to))
+            .when("leave", ">", to)
+            .then(to)
             .else(sql.ref("leave"))
             .end()
             .as("leave"),
@@ -59,8 +64,8 @@ export default defineEventHandler(async (event) => {
         .select((eb) =>
           eb
             .case()
-            .when("join", "<", temporalToString(from))
-            .then(temporalToString(from))
+            .when("join", "<", from)
+            .then(from)
             .else(sql.ref("join"))
             .end()
             .as("join"),
@@ -69,7 +74,7 @@ export default defineEventHandler(async (event) => {
     )
     .selectFrom("ft")
     .select(
-      sql`(EXTRACT(EPOCH FROM SUM(ft.leave - ft."join"))/60)::int`.as(
+      sql<number>`(EXTRACT(EPOCH FROM SUM(ft.leave - ft."join"))/60)::int`.as(
         "playDuration",
       ),
     )

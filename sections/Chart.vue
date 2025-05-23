@@ -1,5 +1,4 @@
 <script lang="ts">
-import { Temporal } from "temporal-polyfill";
 import {
   Chart,
   registerables,
@@ -9,57 +8,107 @@ import {
   type ChartDataset,
 } from "chart.js";
 import annotationPlugin from "chartjs-plugin-annotation";
+import "chartjs-adapter-date-fns";
 import type { InternalApi } from "nitropack/types";
+import * as df from "date-fns";
+import { FetchError } from "ofetch";
 Chart.register(...registerables, annotationPlugin);
 
+export const defaultFrom = () =>
+  df.roundToNearestMinutes(df.sub(new Date(), { days: 1 }));
+export const defaultTo = () =>
+  df.roundToNearestMinutes(df.add(new Date(), { minutes: 1 }));
+
+export const from = ref(defaultFrom());
+export const to = ref(defaultTo());
+
+export const shownMovingAverages = reactive<Record<MovingAverage, boolean>>({
+  0: true,
+  1: false,
+  12: false,
+  24: false,
+  168: false,
+});
 export const counts = ref(
   new Map<MovingAverage, InternalApi["/counts"]["default"]>(),
 );
-export const from = ref(Temporal.Now.zonedDateTimeISO().subtract({ weeks: 1 }));
-export const to = ref(Temporal.Now.zonedDateTimeISO().add({ minutes: 1 }));
 
-export async function useCounts(
-  ma: MovingAverage = 0,
-): Promise<Ref<InternalApi["/counts"]["default"] | null>> {
-  const { data } = await useFetch("/counts", {
-    query: {
-      from: from.value.toString(),
-      to: to.value.toString(),
-      movingAverage: ma,
-    },
-  });
-  return data;
+export const shownPlayer = ref("");
+export const player = ref<InternalApi["/player/:name"]["default"] | null>(null);
+
+export async function updateCounts() {
+  counts.value = new Map(
+    await Promise.all(
+      Object.entries(shownMovingAverages)
+        .filter(([, a]) => a)
+        .map(async ([ma2]) => {
+          const ma = parseInt(ma2) as MovingAverage;
+          const data = await $fetch("/counts", {
+            query: {
+              from: from.value.toISOString(),
+              to: to.value.toISOString(),
+              movingAverage: ma,
+            },
+          });
+          return [ma, data] as [
+            MovingAverage,
+            InternalApi["/counts"]["default"],
+          ];
+        }),
+    ),
+  );
+  console.log("counts updated");
+}
+
+export async function updatePlayer() {
+  try {
+    player.value =
+      shownPlayer.value === ""
+        ? null
+        : await $fetch(`/player/${shownPlayer.value}`, {
+            query: {
+              from: from.value.toISOString(),
+              to: to.value.toISOString(),
+            },
+          });
+  } catch (e) {
+    if (e instanceof FetchError && e.status === 404) {
+      player.value = null;
+      return;
+    }
+    throw e;
+  }
+  console.log("player updated");
 }
 </script>
 <script setup lang="ts">
 /* eslint-disable import/first */
 import { Line } from "vue-chartjs";
 
-onMounted(async () => {
-  counts.value.set(0, (await useCounts()).value!);
-});
+const ALPHA = "f84210";
 
+onMounted(() => updateCounts());
+
+// eslint-disable-next-line max-params
 function generateLine(
   name: string,
   colour: string,
   y: Point[],
   i: number,
   ma: MovingAverage,
-): ChartDataset<"line", (number | Point)[]> {
+): ChartDataset<"line", Point[]> {
   return {
     tension: 0.25,
-    label: `${name}${ma === 0 ? "" : ` (Rolling average ${rollingAverages[ma]})`}`,
+    label: `${name}${ma === 0 ? "" : ` (Rolling average ${movingAverages[ma]})`}`,
     data: y,
-    borderColor: colour + alpha[i],
+    borderColor: colour + ALPHA[i],
     pointRadius: 0,
     pointHitRadius: 5,
     spanGaps: ma !== 0,
   };
 }
 
-const chartData = computed<
-  ChartData<"line", (number | Point | null)[], unknown>
->(() => ({
+const chartData = computed<ChartData<"line", Point[]>>(() => ({
   // labels: counts.value?.map(c => c.timestamp),
   datasets: Array.from(counts.value.entries())
     .sort(([a, _], [b, __]) => b - a)
@@ -68,7 +117,7 @@ const chartData = computed<
       const allLine = generateLine(
         "all",
         "#fff",
-        m.map((a) => ({ x: new Date(a.timestamp).getTime(), y: a.all })),
+        m.map((a) => ({ x: a.timestamp, y: a.all })),
         i,
         ma,
       );
@@ -78,7 +127,7 @@ const chartData = computed<
             cat,
             colour,
             m.map((a) => ({
-              x: new Date(a.timestamp).getTime(),
+              x: a.timestamp,
               y: a[`cat_${cat}`],
             })),
             i,
@@ -89,6 +138,7 @@ const chartData = computed<
     }),
 }));
 
+// eslint-disable-next-line max-lines-per-function
 const chartOptions = computed<ChartOptions<"line">>(() => ({
   animation: false,
   plugins: {
@@ -96,30 +146,33 @@ const chartOptions = computed<ChartOptions<"line">>(() => ({
       common: {
         drawTime: "beforeDraw",
       },
-      // annotations: playerActiveTimes.map(([from, to]) => {
-      //   console.log(from, to);
-      //   return {
-      //     type: "box",
-      //     backgroundColor: "#333",
-      //     borderWidth: 0,
-      //     xMin: from as unknown as number, // prevent ts from erroring
-      //     xMax: to as unknown as number, // prevent ts from erroring
-      //     label: {
-      //       drawTime: "afterDatasetsDraw",
-      //       display: false,
-      //       content: `${from.local().format("HH:mm")} → ${to.local().format("HH:mm")}`,
-      //       color: "#fc0",
-      //     },
-      //     enter({ element }: any) {
-      //       if (element.label) element.label.options.display = true;
-      //       return true;
-      //     },
-      //     leave({ element }: any) {
-      //       if (element.label) element.label.options.display = false;
-      //       return true;
-      //     },
-      //   };
-      // }),
+      annotations: (player.value?.playTimes ?? []).map(
+        ({ join: j, leave: l }) => {
+          const join = df.parseISO(j);
+          const leave = l === null ? new Date() : df.parseISO(l);
+          return {
+            type: "box",
+            backgroundColor: "#fc02",
+            borderWidth: 0,
+            xMin: join as unknown as number,
+            xMax: leave as unknown as number,
+            label: {
+              drawTime: "afterDatasetsDraw",
+              display: false,
+              content: `${df.format(join, "HH:mm")} → ${df.format(leave, "HH:mm")}`,
+              color: "#fc0",
+            },
+            enter({ element }) {
+              if (element.label) element.label.options.display = true;
+              return true;
+            },
+            leave({ element }) {
+              if (element.label) element.label.options.display = false;
+              return true;
+            },
+          };
+        },
+      ),
     },
   },
   scales: {

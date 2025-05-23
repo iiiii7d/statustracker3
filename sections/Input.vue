@@ -1,15 +1,48 @@
 <script setup lang="ts">
 import CheckboxButton from "~/components/CheckboxButton.vue";
-import { Temporal } from "temporal-polyfill";
+import {
+  from,
+  to,
+  player,
+  shownPlayer,
+  defaultFrom,
+  defaultTo,
+  updateCounts,
+  updatePlayer,
+  shownMovingAverages,
+} from "~/sections/Chart.vue";
+import * as df from "date-fns";
 const runtimeConfig = useRuntimeConfig();
 
-const defaultFrom = Temporal.Now.zonedDateTimeISO().subtract({ days: 1 });
-const defaultTo = Temporal.Now.zonedDateTimeISO().add({ minutes: 1 });
+const inputFrom = useState("inputFrom", () =>
+  df.formatISO(defaultFrom()).replace(/(?:Z|\+.*)$/u, ""),
+);
+const inputTo = useState("inputTo", () =>
+  df.formatISO(defaultTo()).replace(/(?:Z|\+.*)$/u, ""),
+);
+const inputPlayer = useState("player", () => "");
+const loading = useState("loading", () => 0);
 
-const from = defaultFrom.toString().slice(0, 16);
-const to = defaultTo.toString().slice(0, 16);
-const player = "";
-const loading = 0;
+async function query() {
+  loading.value += 1;
+  try {
+    from.value = df.parseISO(inputFrom.value);
+    to.value = df.parseISO(inputTo.value);
+    shownPlayer.value = inputPlayer.value.trim();
+    await Promise.all([updateCounts(), updatePlayer()]);
+  } finally {
+    loading.value -= 1;
+  }
+}
+
+const playDuration = computed(() =>
+  player.value === null
+    ? null
+    : df.formatDuration({
+        hours: Math.floor(player.value.playDuration / 60),
+        minutes: player.value.playDuration % 60,
+      }),
+);
 </script>
 
 <template>
@@ -19,35 +52,54 @@ const loading = 0;
     }}&nbsp;&nbsp;|&nbsp;&nbsp;</b
   >
 
-  <span>Show activity</span>
-  <label for="from">from </label
-  ><input id="from" v-model="from" type="datetime-local" />
+  <label for="from">Show activity from </label
+  ><input id="from" v-model="inputFrom" type="datetime-local" />
+
   <label for="to">to </label
-  ><input id="to" v-model="to" type="datetime-local" />
+  ><input id="to" v-model="inputTo" type="datetime-local" />
+
   <label for="player">for player </label
-  ><input id="player" v-model="player" type="text" placeholder="username" />
-  <button onclick="{query}">Query</button><br />
+  ><input
+    id="player"
+    v-model="inputPlayer"
+    type="text"
+    placeholder="username"
+  />
+
+  <button @click="query">Query</button><br />
 
   <span v-if="loading !== 0" id="player-stats">Loading...</span>
   <span
-    v-else-if="playerStats && player === origPlayer && player !== ''"
+    v-else-if="player !== null && player.playTimes.length === 0"
     id="player-stats"
   >
-    <b>{player}</b> has played for <b>{playerStats.totalTime}</b> between
-    <b>{playerStats.from}</b> and <b>{playerStats.to}</b>, last seen
-    <b>{playerStats.lastLeft}</b></span
-  >
-  <span v-else-if="player === origPlayer && player !== ''" id="player-stats">
-    No data found for <b>{player}</b>
+    <b>{{ shownPlayer }}</b> did not join within this time period
+  </span>
+  <span v-else-if="player !== null" id="player-stats">
+    <b>{{ shownPlayer }}</b> played for <b>{{ playDuration }}</b> within this
+    time period
+  </span>
+  <span v-else-if="shownPlayer !== ''" id="player-stats">
+    Player <b>{{ shownPlayer }}</b> does not exist
   </span>
 
   <br />
-  <span>Rolling Averages</span>
-  <!--  <CheckboxButton v-model="$rollingAverageSwitches[0]">Raw</CheckboxButton>-->
-  <!--  <CheckboxButton v-model="$rollingAverageSwitches[60]">1h</CheckboxButton>-->
-  <!--  <CheckboxButton v-model="$rollingAverageSwitches[720]">12h</CheckboxButton>-->
-  <!--  <CheckboxButton v-model="$rollingAverageSwitches[1440]">1d</CheckboxButton>-->
-  <!--  <CheckboxButton v-model="$rollingAverageSwitches[10080]">7d</CheckboxButton>-->
+  <span>Rolling Averages </span>
+  <CheckboxButton v-model="shownMovingAverages[0]" @click="updateCounts"
+    >Raw</CheckboxButton
+  >&nbsp;
+  <CheckboxButton v-model="shownMovingAverages[1]" @click="updateCounts"
+    >1h</CheckboxButton
+  >&nbsp;
+  <CheckboxButton v-model="shownMovingAverages[12]" @click="updateCounts"
+    >12h</CheckboxButton
+  >&nbsp;
+  <CheckboxButton v-model="shownMovingAverages[24]" @click="updateCounts"
+    >1d</CheckboxButton
+  >&nbsp;
+  <CheckboxButton v-model="shownMovingAverages[168]" @click="updateCounts"
+    >7d</CheckboxButton
+  >
 </template>
 
 <style scoped>

@@ -1,11 +1,10 @@
 import { PoolConfig } from "pg";
-import { Temporal } from "temporal-polyfill";
 import { sql } from "kysely";
 
-export const currentTimestamp = sql<string>`date_trunc('minute', now())`;
-export const previousTimestamp = sql<string>`date_trunc('minute', now() - INTERVAL '1 minute')`;
+export const currentTimestamp = sql<Date>`date_trunc('minute', now())`;
+export const previousTimestamp = sql<Date>`date_trunc('minute', now() - INTERVAL '1 minute')`;
 
-const cache = new Map<string, string>();
+const cache = new Map<string, string | null>();
 
 export interface Config {
   categories: Record<string, { uuids: string[]; colour: string }>;
@@ -14,20 +13,15 @@ export interface Config {
   deleteOldCategories: boolean;
 }
 
-export async function nameToUUID(name: string): Promise<string> {
+export async function nameToUUID(name: string): Promise<string | null> {
   const c = cache.get(name);
   if (c !== undefined) return c;
 
   const res = await fetch(
     `https://api.mojang.com/users/profiles/minecraft/${name}`,
   );
-  if (res.status === 400) throw Error(`${name} is invalid: ${res.statusText}`);
-  const uuid = (await res.json()).id;
+  const uuid = res.status === 404 ? null : (await res.json()).id;
   cache.set(name, uuid);
   console.log(`Found that ${name} has UUID ${uuid}`);
   return uuid;
-}
-
-export function temporalToString(dt: Temporal.ZonedDateTime): string {
-  return dt.toString().split("[")[0];
 }

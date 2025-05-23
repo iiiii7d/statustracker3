@@ -1,8 +1,9 @@
 import { Generated, Kysely, PostgresDialect, sql } from "kysely";
-import { Pool } from "pg";
+import { Pool, types as pgTypes } from "pg";
+import * as df from "date-fns";
 
 export interface CountTable {
-  timestamp: Generated<string>;
+  timestamp: Generated<Date>;
   all: number;
   [key: `cat_${string}`]: number;
 }
@@ -10,8 +11,8 @@ export interface CountTable {
 export interface PlayerTable {
   id: Generated<number>;
   uuid: string;
-  join: string;
-  leave: string | null;
+  join: Date;
+  leave: Date | null;
 }
 
 export interface VersionTable {
@@ -24,6 +25,8 @@ export interface Database {
   players: PlayerTable;
   version: VersionTable;
 }
+
+pgTypes.setTypeParser(pgTypes.builtins.TIMESTAMPTZ, (val) => df.parseISO(val));
 
 const runtimeConfig = useRuntimeConfig();
 export const db = new Kysely<Database>({

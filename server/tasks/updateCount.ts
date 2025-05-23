@@ -11,7 +11,9 @@ async function currentPlayerList(): Promise<string[]> {
     players: { account: string }[];
   };
   const playerNames = res.players.map((a) => a.account);
-  const playerUuids = await Promise.all(playerNames.map((a) => nameToUUID(a)));
+  const playerUuids = (
+    await Promise.all(playerNames.map((a) => nameToUUID(a)))
+  ).filter((a) => a !== null);
   console.log("Retrieval of current player list successful");
   return playerUuids;
 }
@@ -26,14 +28,12 @@ async function updateCounts(trx: Transaction<Database>, playerList: string[]) {
       timestamp: currentTimestamp,
       all: playerList.length,
       ...Object.fromEntries(
-        (
-          Object.entries(runtimeConfig.public.categories) as Entries<
-            Config["categories"]
-          >
-        ).map(([cat, { uuids }]) => [
-          `cat_${cat}`,
-          playerList.filter((a) => uuids.includes(a)).length,
-        ]),
+        Object.entries(runtimeConfig.public.categories).map(
+          ([cat, { uuids }]) => [
+            `cat_${cat}`,
+            playerList.filter((a) => uuids.includes(a)).length,
+          ],
+        ),
       ),
     })
     .execute();
