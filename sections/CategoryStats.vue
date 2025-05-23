@@ -1,10 +1,33 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { counts } from "~/sections/Chart.vue";
+
+const runtimeConfig = useRuntimeConfig();
+
+function percentage(column: "all" | `cat_${string}`): number {
+  const count2 = counts.value.get(0);
+  if (count2 === undefined) return 0;
+  return (
+    Math.round(
+      (count2.filter((c) => c[column]).length / count2.length) * 100 * 100,
+    ) / 100
+  );
+}
+</script>
 
 <template>
-  <h3>% of the time that each category was online</h3>
-  {#each (percentages ?? []) as [k, p], i}
-  <b style="color: {lineColors[i % lineColors.length]};">{k}: </b> {p}% {#if i
-  !== percentages.length - 1}<b>&nbsp;|&nbsp;&nbsp;</b>{/if} {/each}
+  <h3>Statistics</h3>
+  <span
+    >People were online <b>{{ percentage("all") }}%</b> of this time
+    period</span
+  ><br />
+  <u>By category:</u><br />
+  <span
+    v-for="[name, cat] in Object.entries(runtimeConfig.public.categories)"
+    :key="name"
+  >
+    &nbsp;&nbsp;<b :style="{ color: cat.colour }">{{ name }}: </b>
+    {{ percentage(`cat_${cat}`) }}%<br />
+  </span>
 </template>
 
 <style scoped></style>

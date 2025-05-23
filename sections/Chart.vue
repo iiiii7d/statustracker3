@@ -40,7 +40,7 @@ export async function updateCounts() {
   counts.value = new Map(
     await Promise.all(
       Object.entries(shownMovingAverages)
-        .filter(([, a]) => a)
+        .filter(([ma, a]) => ma === "0" || a)
         .map(async ([ma2]) => {
           const ma = parseInt(ma2) as MovingAverage;
           const data = await $fetch("/counts", {
@@ -101,7 +101,8 @@ function generateLine(
     tension: 0.25,
     label: `${name}${ma === 0 ? "" : ` (Rolling average ${movingAverages[ma]})`}`,
     data: y,
-    borderColor: colour + ALPHA[i],
+    borderColor:
+      colour + (colour.length === 4 ? ALPHA[i] : ALPHA[i] + ALPHA[i]),
     pointRadius: 0,
     pointHitRadius: 5,
     spanGaps: ma !== 0,
@@ -111,7 +112,8 @@ function generateLine(
 const chartData = computed<ChartData<"line", Point[]>>(() => ({
   // labels: counts.value?.map(c => c.timestamp),
   datasets: Array.from(counts.value.entries())
-    .sort(([a, _], [b, __]) => b - a)
+    .sort(([a], [b]) => b - a)
+    .filter(([ma]) => ma !== 0 || shownMovingAverages[0])
     .flatMap(([ma, m], i) => {
       const runtimeConfig = useRuntimeConfig();
       const allLine = generateLine(

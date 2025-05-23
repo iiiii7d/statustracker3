@@ -10,7 +10,7 @@ try {
 } catch {
   config = {
     categories: {
-      test: { uuids: ["3b95b88fcee947549f965a5866ecf773"], colour: "#ff0000" },
+      test: { uuids: ["3b95b88fcee947549f965a5866ecf773"], colour: "#f00" },
     },
     dynmapLink:
       "https://api.allorigins.win/raw?url=https%3A//dynmap.minecartrapidtransit.net/main/standalone/dynmap_new.json",
