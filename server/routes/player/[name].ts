@@ -70,7 +70,10 @@ export default defineEventHandler(async (event) => {
             .end()
             .as("join"),
         )
-        .where("uuid", "=", uuid),
+        .where("uuid", "=", uuid)
+        .where((eb) =>
+          eb.or([eb.between("join", from, to), eb.between("leave", from, to)]),
+        ),
     )
     .selectFrom("ft")
     .select(
