@@ -5,21 +5,17 @@ import {
   to,
   player,
   shownPlayer,
-  defaultFrom,
-  defaultTo,
   updateCounts,
   updatePlayer,
   shownMovingAverages,
 } from "~/sections/Chart.vue";
 import * as df from "date-fns";
-const runtimeConfig = useRuntimeConfig();
+import { z } from "zod/v4";
 
-const inputFrom = useState("inputFrom", () =>
-  df.formatISO(defaultFrom()).replace(/(?:Z|\+.*)$/u, ""),
-);
-const inputTo = useState("inputTo", () =>
-  df.formatISO(defaultTo()).replace(/(?:Z|\+.*)$/u, ""),
-);
+// temp value
+const inputFrom = useState("inputFrom", () => dateToInputValue(new Date()));
+const inputTo = useState("inputTo", () => dateToInputValue(new Date()));
+
 const inputPlayer = useState("player", () => "");
 const loading = useState("loading", () => 0);
 
@@ -34,6 +30,40 @@ async function query() {
     loading.value -= 1;
   }
 }
+
+onMounted(() => {
+  const { query: routeQuery } = useRoute();
+  const { error } = z
+    .object({
+      from: z.iso.datetime({ local: false, offset: true }).optional(),
+      to: z.iso.datetime({ local: false, offset: true }).optional(),
+    })
+    .safeParse(routeQuery);
+  if (error)
+    throw createError({
+      statusCode: 400,
+      message: error.message,
+    });
+
+  const f =
+    routeQuery.from === undefined
+      ? df.roundToNearestMinutes(df.sub(new Date(), { days: 1 }))
+      : df.parseISO(routeQuery.from as string);
+  const t =
+    routeQuery.to === undefined
+      ? df.roundToNearestMinutes(df.add(new Date(), { minutes: 1 }))
+      : df.parseISO(routeQuery.to as string);
+  if (df.compareAsc(f, t) === 1) {
+    throw createError({
+      statusCode: 400,
+      message: "`to` is earlier than `from`",
+    });
+  }
+
+  inputFrom.value = dateToInputValue(f);
+  inputTo.value = dateToInputValue(t);
+  query();
+});
 
 const playDuration = computed(() =>
   player.value === null
@@ -55,7 +85,7 @@ onMounted(() => {
 
 <template>
   <b style="font-size: 1.5em; color: #fc0">
-    StatusTracker v{{ runtimeConfig.public.clientVersion
+    StatusTracker v{{ $config.public.clientVersion
     }}<span v-if="!mobile">&nbsp;&nbsp;|&nbsp;&nbsp;</span><br v-else />
   </b>
 
@@ -75,7 +105,7 @@ onMounted(() => {
     placeholder="username"
   />
   &nbsp;
-  <button @click="query">Query</button><br />
+  <button id="query" @click="query">Query</button><br />
 
   <span v-if="loading !== 0" id="player-stats">Loading...</span>
   <span

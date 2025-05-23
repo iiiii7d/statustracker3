@@ -20,7 +20,6 @@ try {
       user: "user",
       port: 5432,
     },
-    deleteOldCategories: false,
   };
 }
 
@@ -44,13 +43,22 @@ export default defineNuxtConfig({
       tasks: true,
     },
     scheduledTasks: {
-      "* * * * *": ["updateCount"],
+      "* * * * *": [
+        "updateCount",
+        ...(config.webhooks === undefined && !process.env.NUXT_WEBHOOKS
+          ? []
+          : ["webhooks"]),
+      ],
     },
   },
 
   runtimeConfig: {
     dynmapLink: config.dynmapLink,
     db: config.db,
+    webhooks:
+      config.webhooks === undefined
+        ? undefined
+        : JSON.stringify(config.webhooks),
     deleteOldCategories: config.deleteOldCategories ? "1" : "",
     public: {
       clientVersion: pkg.version,

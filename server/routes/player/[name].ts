@@ -23,14 +23,14 @@ export default defineEventHandler(async (event) => {
   if (df.compareAsc(from, to) === 1) {
     throw createError({
       statusCode: 400,
-      statusMessage: "`to` is earlier than `from`, switch it around",
+      message: "`to` is earlier than `from`",
     });
   }
   const uuid = await nameToUUID(player);
   if (uuid === null) {
     throw createError({
       statusCode: 404,
-      statusMessage: `no UUID for ${player}`,
+      message: `no UUID for ${player}`,
     });
   }
 

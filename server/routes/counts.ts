@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
   if (df.compareAsc(from, to) === 1) {
     throw createError({
       statusCode: 400,
-      statusMessage: "`to` is earlier than `from`, switch it around",
+      message: "`to` is earlier than `from`",
     });
   }
 

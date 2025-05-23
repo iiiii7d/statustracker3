@@ -14,17 +14,13 @@ import * as df from "date-fns";
 import { FetchError } from "ofetch";
 Chart.register(...registerables, annotationPlugin);
 
-export const defaultFrom = () =>
-  df.roundToNearestMinutes(df.sub(new Date(), { days: 1 }));
-export const defaultTo = () =>
-  df.roundToNearestMinutes(df.add(new Date(), { minutes: 1 }));
-
-export const from = ref(defaultFrom());
-export const to = ref(defaultTo());
+// temp value
+export const from = ref(new Date());
+export const to = ref(new Date());
 
 export const shownMovingAverages = reactive<Record<MovingAverage, boolean>>({
   0: true,
-  1: false,
+  1: true,
   12: false,
   24: false,
   168: false,
@@ -86,8 +82,6 @@ export async function updatePlayer() {
 import { Line } from "vue-chartjs";
 
 const ALPHA = "f84210";
-
-onMounted(() => updateCounts());
 
 // eslint-disable-next-line max-params
 function generateLine(

@@ -20,10 +20,16 @@ export interface VersionTable {
   version: string;
 }
 
+export interface WebhooksTable {
+  id: string;
+  nextUpdate: Date;
+}
+
 export interface Database {
   counts: CountTable;
   players: PlayerTable;
   version: VersionTable;
+  webhooks: WebhooksTable;
 }
 
 pgTypes.setTypeParser(pgTypes.builtins.TIMESTAMPTZ, (val) => df.parseISO(val));
@@ -86,6 +92,13 @@ db.transaction()
           version: "3.0.0",
         })
         .execute();
+
+      await trx.schema
+        .createTable("webhooks")
+        .ifNotExists()
+        .addColumn("id", "varchar", (col) => col.primaryKey())
+        .addColumn("nextUpdate", "timestamptz", (col) => col.notNull())
+        .execute();
     }
 
     // new categories
@@ -128,6 +141,15 @@ db.transaction()
             .execute();
         }),
       );
+    }
+
+    // delete old webhook schedules
+    if (runtimeConfig.webhooks !== undefined) {
+      const webhookConfig = useWebhookConfig();
+      await trx
+        .deleteFrom("webhooks")
+        .where("id", "not in", Object.keys(webhookConfig.schedules))
+        .execute();
     }
   })
   .then();

@@ -1,3 +1,5 @@
+import * as df from "date-fns";
+
 export const movingAverages = {
   0: "Raw",
   1: "1h",
@@ -7,3 +9,7 @@ export const movingAverages = {
 } as const;
 
 export type MovingAverage = keyof typeof movingAverages;
+
+export function dateToInputValue(date: Date): string {
+  return df.formatISO(date).replace(/(?:Z|\+.*)$/u, "");
+}
