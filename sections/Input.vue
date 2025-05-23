@@ -12,26 +12,13 @@ import {
 import * as df from "date-fns";
 import { z } from "zod/v4";
 
-// temp value
-const inputFrom = useState("inputFrom", () => dateToInputValue(new Date()));
-const inputTo = useState("inputTo", () => dateToInputValue(new Date()));
+const inputFrom = useState("inputFrom", () => "");
+const inputTo = useState("inputTo", () => "");
 
 const inputPlayer = useState("player", () => "");
 const loading = useState("loading", () => 0);
 
-async function query() {
-  loading.value += 1;
-  try {
-    from.value = df.parseISO(inputFrom.value);
-    to.value = df.parseISO(inputTo.value);
-    shownPlayer.value = inputPlayer.value.trim();
-    await Promise.all([updateCounts(), updatePlayer()]);
-  } finally {
-    loading.value -= 1;
-  }
-}
-
-onMounted(() => {
+function getDefaultFromTo(): [Date, Date] {
   const { query: routeQuery } = useRoute();
   const { error } = z
     .object({
@@ -59,11 +46,29 @@ onMounted(() => {
       message: "`to` is earlier than `from`",
     });
   }
+  return [f, t];
+}
 
-  inputFrom.value = dateToInputValue(f);
-  inputTo.value = dateToInputValue(t);
-  query();
-});
+// eslint-disable-next-line max-statements
+async function query() {
+  loading.value += 1;
+  try {
+    if (inputFrom.value === "" || inputTo.value === "") {
+      const [f, t] = getDefaultFromTo();
+      if (inputFrom.value === "") inputFrom.value = dateToInputValue(f);
+      if (inputTo.value === "") inputTo.value = dateToInputValue(t);
+    }
+
+    from.value = df.parseISO(inputFrom.value);
+    to.value = df.parseISO(inputTo.value);
+    shownPlayer.value = inputPlayer.value.trim();
+    await Promise.all([updateCounts(), updatePlayer()]);
+  } finally {
+    loading.value -= 1;
+  }
+}
+
+onMounted(() => query());
 
 const playDuration = computed(() =>
   player.value === null
