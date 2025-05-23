@@ -17,6 +17,7 @@ export interface Config {
   db: PoolConfig;
   categories?: Record<string, { uuids: string[]; colour: string }>;
   deleteOldCategories?: boolean;
+  countsApproxMaxLength?: number;
   webhooks?: WebhookConfig;
 }
 

@@ -9,9 +9,6 @@ try {
   );
 } catch {
   config = {
-    categories: {
-      test: { uuids: ["3b95b88fcee947549f965a5866ecf773"], colour: "#f00" },
-    },
     dynmapLink:
       "https://api.allorigins.win/raw?url=https%3A//dynmap.minecartrapidtransit.net/main/standalone/dynmap_new.json",
     db: {
@@ -60,9 +57,10 @@ export default defineNuxtConfig({
         ? undefined
         : JSON.stringify(config.webhooks),
     deleteOldCategories: config.deleteOldCategories ? "1" : "",
+    countsApproxMaxLength: config.countsApproxMaxLength ?? 1000,
     public: {
       clientVersion: pkg.version,
-      categories: config.categories,
+      categories: config.categories ?? {},
     },
   },
 
