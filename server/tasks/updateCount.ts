@@ -2,38 +2,34 @@ import { Database, db } from "../db";
 import { sql, Transaction } from "kysely";
 
 async function currentPlayerList(): Promise<string[]> {
-  const runtimeConfig = useRuntimeConfig();
-  console.log(
-    `Retrieving current player list from ${runtimeConfig.dynmapLink}`,
-  );
+  const config = useConfig();
+  logger.info(`Retrieving current player list from ${config.dynmapLink}`);
 
-  const res = (await (await fetch(runtimeConfig.dynmapLink)).json()) as {
+  const res = (await (await fetch(config.dynmapLink)).json()) as {
     players: { account: string }[];
   };
   const playerNames = res.players.map((a) => a.account);
   const playerUuids = (
     await Promise.all(playerNames.map((a) => nameToUUID(a)))
   ).filter((a) => a !== null);
-  console.log("Retrieval of current player list successful");
+  logger.info("Retrieval of current player list successful");
   return playerUuids;
 }
 
 async function updateCounts(trx: Transaction<Database>, playerList: string[]) {
-  const runtimeConfig = useRuntimeConfig();
+  const config = useConfig();
 
-  console.log("Updating `counts` table");
+  logger.info("Updating `counts` table");
   await trx
     .insertInto("counts")
     .values({
       timestamp: currentTimestamp,
       all: playerList.length,
       ...Object.fromEntries(
-        Object.entries(runtimeConfig.public.categories).map(
-          ([cat, { uuids }]) => [
-            `cat_${cat}`,
-            playerList.filter((a) => uuids.includes(a)).length,
-          ],
-        ),
+        Object.entries(config.categories).map(([cat, { uuids }]) => [
+          `cat_${cat}`,
+          playerList.filter((a) => uuids.includes(a)).length,
+        ]),
       ),
     })
     .execute();
@@ -43,7 +39,7 @@ async function updatePlayersJoin(
   trx: Transaction<Database>,
   playerList: string[],
 ) {
-  console.log("Updating `players` table for joined players");
+  logger.info("Updating `players` table for joined players");
   await Promise.all(
     playerList.map(async (player) => {
       const existing = await trx
@@ -69,7 +65,7 @@ async function updatePlayersLeave(
   trx: Transaction<Database>,
   playerList: string[],
 ) {
-  console.log("Updating `players` table for left players");
+  logger.info("Updating `players` table for left players");
   await Promise.all(
     (
       await trx
@@ -97,7 +93,7 @@ async function closePlayerEntriesIfPaused(trx: Transaction<Database>) {
   )
     return;
 
-  console.log("Server was paused. Completing last player entries");
+  logger.info("Server was paused. Completing last player entries");
   const { timestamp: lastTimestamp } = await trx
     .selectFrom("counts")
     .select("timestamp")

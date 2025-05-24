@@ -10,7 +10,7 @@ export default defineTask({
   },
   // eslint-disable-next-line max-lines-per-function
   async run() {
-    const webhookConfig = useWebhookConfig();
+    const webhookConfig = useConfig().webhooks!;
     const webhookClient = new WebhookClient(webhookConfig.client);
 
     await Promise.all(
@@ -30,7 +30,7 @@ export default defineTask({
             nextUpdate !== undefined &&
             df.compareAsc(new Date(), nextUpdate) >= 0
           ) {
-            console.log(`Running webhook \`${id}\``);
+            logger.info(`Running webhook \`${id}\``);
             const from = df.sub(new Date(), range);
             const to = new Date();
 
@@ -67,14 +67,14 @@ export default defineTask({
                   .replaceAll("%to%", to.toString()),
                 files: [attachment],
               });
-              console.log(`Webhook run \`${id}\` successful`);
+              logger.info(`Webhook run \`${id}\` successful`);
             } finally {
               await browser.close();
             }
           }
 
           const newNextUpdate = interval.next().toDate();
-          console.log(`Webhook \`${id}\` will run again at ${newNextUpdate}`);
+          logger.info(`Webhook \`${id}\` will run again at ${newNextUpdate}`);
           if (nextUpdate === undefined) {
             await db
               .insertInto("webhooks")

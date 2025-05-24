@@ -19,7 +19,8 @@ const schema = z.object({
 
 // eslint-disable-next-line max-lines-per-function
 export default defineEventHandler(async (event) => {
-  const runtimeConfig = useRuntimeConfig();
+  logger.info(`Processing ${event.path}`);
+  const config = useConfig();
   const { from, to, movingAverage } = await getValidatedQuery(event, (body) =>
     schema.parse(body),
   );
@@ -45,7 +46,7 @@ export default defineEventHandler(async (event) => {
               ) as never),
         )
         .select(
-          Object.keys(runtimeConfig.public.categories).map((n) => {
+          Object.keys(config.categories).map((n) => {
             if (movingAverage === 0) {
               return `cat_${n}`;
             }
@@ -66,10 +67,10 @@ export default defineEventHandler(async (event) => {
     .select([
       "timestamp",
       "all",
-      ...Object.keys(runtimeConfig.public.categories).map((n) => `cat_${n}`),
+      ...Object.keys(config.categories).map((n) => `cat_${n}`),
     ])
     .where(
-      sql<boolean>`count <= ${runtimeConfig.countsApproxMaxLength} OR MOD(row_n, (count/${runtimeConfig.countsApproxMaxLength})) = 0`,
+      sql<boolean>`count <= ${config.countsApproxMaxLength} OR MOD(row_n, (count/${config.countsApproxMaxLength})) = 0`,
     )
     .execute();
 });

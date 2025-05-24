@@ -15,6 +15,7 @@ const schema = z.object({
 
 // eslint-disable-next-line max-lines-per-function,max-statements
 export default defineEventHandler(async (event) => {
+  logger.info(`Processing ${event.path}`);
   const player = getRouterParam(event, "name")!;
 
   const { from, to } = await getValidatedQuery(event, (body) =>

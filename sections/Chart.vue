@@ -53,7 +53,6 @@ export async function updateCounts() {
         }),
     ),
   );
-  console.log("counts updated");
 }
 
 export async function updatePlayer() {
@@ -74,7 +73,6 @@ export async function updatePlayer() {
     }
     throw e;
   }
-  console.log("player updated");
 }
 </script>
 <script setup lang="ts">

@@ -34,10 +34,10 @@ export interface Database {
 
 pgTypes.setTypeParser(pgTypes.builtins.TIMESTAMPTZ, (val) => df.parseISO(val));
 
-const runtimeConfig = useRuntimeConfig();
+const config = useConfig();
 export const db = new Kysely<Database>({
   dialect: new PostgresDialect({
-    pool: new Pool(runtimeConfig.db),
+    pool: new Pool(config.db),
   }),
 });
 
@@ -52,7 +52,7 @@ db.transaction()
         )
       ).rows.length === 0
     ) {
-      console.log("Runnning migrations for v3.0.0");
+      logger.info("Runnning migrations for v3.0.0");
       await trx.schema
         .createTable("counts")
         .ifNotExists()
@@ -112,7 +112,7 @@ db.transaction()
       .map((n) => n.column_name)
       .filter((n) => n.startsWith("cat_"))
       .map((n) => n.slice(4));
-    const currentCategories = Object.keys(runtimeConfig.public.categories);
+    const currentCategories = Object.keys(config.categories);
 
     const newTableNames = currentCategories.filter(
       (n) => !currentTableNames.includes(n),
@@ -129,7 +129,7 @@ db.transaction()
       }),
     );
 
-    if (runtimeConfig.deleteOldCategories) {
+    if (config.deleteOldCategories) {
       const oldTableNames = currentTableNames.filter(
         (n) => !currentCategories.includes(n),
       );
@@ -144,11 +144,10 @@ db.transaction()
     }
 
     // delete old webhook schedules
-    if (runtimeConfig.webhooks !== "") {
-      const webhookConfig = useWebhookConfig();
+    if (config.webhooks !== undefined) {
       await trx
         .deleteFrom("webhooks")
-        .where("id", "not in", Object.keys(webhookConfig.schedules))
+        .where("id", "not in", Object.keys(config.webhooks.schedules))
         .execute();
     }
   })

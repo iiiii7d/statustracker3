@@ -1,23 +1,16 @@
 import pkg from "./package.json";
-import * as fs from "node:fs";
+import { getConfig } from "./server/utils/config";
 
-// eslint-disable-next-line init-declarations
-let config: Config;
-try {
-  config = JSON.parse(
-    fs.readFileSync(process.env.CONFIG_PATH ?? "config.json").toString(),
-  );
-} catch {
-  config = {
-    dynmapLink:
-      "https://api.allorigins.win/raw?url=https%3A//dynmap.minecartrapidtransit.net/main/standalone/dynmap_new.json",
-    db: {
-      database: "statustracker3",
-      host: "localhost",
-      user: "user",
-      port: 5432,
-    },
-  };
+const config = getConfig();
+
+declare module "nuxt/schema" {
+  interface RuntimeConfig {
+    config: string;
+  }
+  interface PublicRuntimeConfig {
+    clientVersion: string;
+    categories: Config["categories"];
+  }
 }
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -50,14 +43,7 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    dynmapLink: config.dynmapLink,
-    db: config.db,
-    webhooks:
-      config.webhooks === undefined
-        ? undefined
-        : JSON.stringify(config.webhooks),
-    deleteOldCategories: config.deleteOldCategories ? "1" : "",
-    countsApproxMaxLength: config.countsApproxMaxLength ?? 1000,
+    config: JSON.stringify(config),
     public: {
       clientVersion: pkg.version,
       categories: config.categories ?? {},

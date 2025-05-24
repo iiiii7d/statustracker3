@@ -32,7 +32,6 @@ export default withNuxt(
       "func-style": "off",
       "id-length": "off",
       "new-cap": "off",
-      "no-console": "off",
       "no-magic-numbers": "off",
       "no-ternary": "off",
       "no-undefined": "off",
