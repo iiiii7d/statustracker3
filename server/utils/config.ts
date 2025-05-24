@@ -24,7 +24,10 @@ const configSchema = z.object({
     .record(
       z.string(),
       z.object({
-        uuids: z.guid().array(),
+        uuids: z
+          .string()
+          .regex(/^[0-9a-fA-F]{32}$/u)
+          .array(),
         colour: z.string().regex(/^#(?:[0-9a-f]{3}){1,2}$/u),
       }),
     )
