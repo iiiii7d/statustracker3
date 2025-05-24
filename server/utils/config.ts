@@ -29,14 +29,14 @@ const configSchema = z.object({
       }),
     )
     .default({}),
+  webhooks: webhookConfigSchema.optional(),
   deleteOldCategories: z.boolean().default(false),
   countsApproxMaxLength: z.int().gte(1).default(1000),
-  webhooks: webhookConfigSchema.optional(),
 });
 
 export type Config = z.infer<typeof configSchema>;
 
-// eslint-disable-next-line max-statements
+// eslint-disable-next-line max-statements,consistent-return
 export function getConfig(): Config {
   if (process.env.CONFIG) {
     logger.info("Using config found in `CONFIG`");

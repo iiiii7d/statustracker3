@@ -1,5 +1,5 @@
 import { Generated, Kysely, PostgresDialect, sql } from "kysely";
-import { Pool, types as pgTypes } from "pg";
+import { types as pgTypes } from "pg";
 import * as df from "date-fns";
 
 export interface CountTable {
