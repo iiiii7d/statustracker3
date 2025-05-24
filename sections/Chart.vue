@@ -6,13 +6,31 @@ import {
   type Point,
   type ChartOptions,
   type ChartDataset,
+  LineController,
+  PointElement,
+  Legend,
+  TimeScale,
+  LineElement,
+  LinearScale,
+  Tooltip,
 } from "chart.js";
 import annotationPlugin from "chartjs-plugin-annotation";
 import "chartjs-adapter-date-fns";
 import type { InternalApi } from "nitropack/types";
 import * as df from "date-fns";
 import { FetchError } from "ofetch";
-Chart.register(...registerables, annotationPlugin);
+
+// see https://www.chartjs.org/docs/latest/getting-started/integration.html for a full list
+Chart.register(
+  LineController,
+  LineElement,
+  PointElement,
+  Legend,
+  LinearScale,
+  TimeScale,
+  Tooltip,
+  annotationPlugin,
+);
 
 // temp value
 export const from = ref(new Date());

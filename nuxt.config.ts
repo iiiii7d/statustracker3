@@ -29,6 +29,7 @@ export default defineNuxtConfig({
   css: ["./assets/style.css"],
 
   nitro: {
+    compressPublicAssets: true,
     experimental: {
       tasks: true,
     },
