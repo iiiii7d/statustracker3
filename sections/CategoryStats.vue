@@ -21,9 +21,9 @@ function percentage(column: "all" | `cat_${string}`): number {
     period</span
   ><br />
   <u>By category:</u><br />
-  <span v-for="[name, cat] in Object.entries(categories!)" :key="name">
-    &nbsp;&nbsp;<b :style="{ color: cat.colour }">{{ name }}: </b>
-    {{ percentage(`cat_${cat}`) }}%<br />
+  <span v-for="[name, { colour }] in Object.entries(categories!)" :key="name">
+    &nbsp;&nbsp;<b :style="{ color: colour }">{{ name }}: </b>
+    {{ percentage(`cat_${name}`) }}%<br />
   </span>
 </template>
 
