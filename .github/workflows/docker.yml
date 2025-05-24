@@ -7,8 +7,8 @@ name: Docker
 
 on:
   push:
-    tags:
-      - "*"
+    branches:
+      - master
 
 env:
   # Use docker.io for Docker Hub if empty
