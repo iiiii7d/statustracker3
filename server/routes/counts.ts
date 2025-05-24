@@ -1,4 +1,4 @@
-import { CountTable, db } from "~/server/db";
+import { CountTable, getDB } from "~/server/db";
 import { z } from "zod/v4";
 import { Selectable, sql } from "kysely";
 import * as df from "date-fns";
@@ -20,6 +20,7 @@ const schema = z.object({
 // eslint-disable-next-line max-lines-per-function
 export default defineEventHandler(async (event) => {
   logger.verbose(`Processing ${event.path}`);
+  const db = await getDB();
 
   const { from, to, movingAverage } = await getValidatedQuery(event, (body) =>
     schema.parse(body),

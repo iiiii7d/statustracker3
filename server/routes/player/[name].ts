@@ -1,7 +1,7 @@
-import { db } from "~/server/db";
 import { z } from "zod/v4";
 import { sql } from "kysely";
 import * as df from "date-fns";
+import { getDB } from "~/server/db";
 
 const schema = z.object({
   from: z.iso
@@ -17,6 +17,7 @@ const schema = z.object({
 export default defineEventHandler(async (event) => {
   logger.verbose(`Processing ${event.path}`);
   const player = getRouterParam(event, "name")!;
+  const db = await getDB();
 
   const { from, to } = await getValidatedQuery(event, (body) =>
     schema.parse(body),

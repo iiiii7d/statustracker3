@@ -34,11 +34,23 @@ export interface Database {
 
 pgTypes.setTypeParser(pgTypes.builtins.TIMESTAMPTZ, (val) => df.parseISO(val));
 
-export const db = new Kysely<Database>({
+const db = new Kysely<Database>({
   dialect: new PostgresDialect({
     pool: config.db,
   }),
 });
+let dbReady = false;
+
+export async function getDB(): Promise<Kysely<Database>> {
+  // eslint-disable-next-line no-unmodified-loop-condition
+  while (!dbReady) {
+    // eslint-disable-next-line no-await-in-loop
+    await new Promise((r) => {
+      setTimeout(r, 0);
+    });
+  }
+  return db;
+}
 
 db.transaction()
   // eslint-disable-next-line max-lines-per-function,max-statements
@@ -150,4 +162,6 @@ db.transaction()
         .execute();
     }
   })
-  .then();
+  .then(() => {
+    dbReady = true;
+  });

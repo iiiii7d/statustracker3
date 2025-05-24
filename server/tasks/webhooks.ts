@@ -1,8 +1,8 @@
 import { AttachmentBuilder } from "discord.js";
-import { db } from "~/server/db";
 import * as df from "date-fns";
 import { CronExpressionParser } from "cron-parser";
 import puppeteer from "puppeteer";
+import { getDB } from "~/server/db";
 
 export default defineTask({
   meta: {
@@ -11,6 +11,7 @@ export default defineTask({
   // eslint-disable-next-line max-lines-per-function
   async run() {
     const webhookConfig = config.webhooks;
+    const db = await getDB();
     if (webhookConfig === undefined) return { result: "success" };
 
     await Promise.all(

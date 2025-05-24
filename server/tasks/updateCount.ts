@@ -1,4 +1,4 @@
-import { Database, db } from "../db";
+import { Database, getDB } from "../db";
 import { sql, Transaction } from "kysely";
 
 async function currentPlayerList(): Promise<string[]> {
@@ -118,7 +118,7 @@ export default defineTask({
   async run() {
     const playerList = await currentPlayerList();
 
-    await db.transaction().execute(async (trx) => {
+    await (await getDB()).transaction().execute(async (trx) => {
       await updateCounts(trx, playerList);
 
       await closePlayerEntriesIfPaused(trx);

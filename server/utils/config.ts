@@ -39,7 +39,7 @@ const configSchema = z.object({
 
 export type Config = z.infer<typeof configSchema>;
 
-// eslint-disable-next-line max-statements,consistent-return
+// eslint-disable-next-line consistent-return
 export function getConfig(): Config {
   if (process.env.CONFIG) {
     logger.info("Using config found in `CONFIG`");
