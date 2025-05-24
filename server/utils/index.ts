@@ -14,6 +14,6 @@ export async function nameToUUID(name: string): Promise<string | null> {
   );
   const uuid = res.status === 404 ? null : (await res.json()).id;
   cache.set(name, uuid);
-  logger.debug(`Found that \`${name}\` has UUID \`${uuid}\``);
+  logger.verbose(`Found that \`${name}\` has UUID \`${uuid}\``);
   return uuid;
 }

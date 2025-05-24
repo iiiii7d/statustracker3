@@ -19,7 +19,7 @@ const schema = z.object({
 
 // eslint-disable-next-line max-lines-per-function
 export default defineEventHandler(async (event) => {
-  logger.info(`Processing ${event.path}`);
+  logger.verbose(`Processing ${event.path}`);
 
   const { from, to, movingAverage } = await getValidatedQuery(event, (body) =>
     schema.parse(body),

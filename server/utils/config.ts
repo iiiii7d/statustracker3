@@ -65,7 +65,7 @@ export function getConfig(): Config {
     });
   }
 
-  logger.emerg(`Could not find config at ${configPath}`);
+  logger.error(`Could not find config at ${configPath}`);
   process.exit(1);
 }
 export const config = getConfig();
