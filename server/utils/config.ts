@@ -51,20 +51,6 @@ export function getConfig(): Config {
     );
   }
 
-  if (!process.env.CONFIG_PATH && process.env.NODE_ENV !== "production") {
-    logger.info("Using default config");
-    return configSchema.parse({
-      dynmapLink:
-        "https://api.allorigins.win/raw?url=https%3A//dynmap.minecartrapidtransit.net/main/standalone/dynmap_new.json",
-      db: {
-        database: "statustracker3",
-        host: "localhost",
-        user: "user",
-        port: 5432,
-      },
-    });
-  }
-
   logger.error(`Could not find config at ${configPath}`);
   process.exit(1);
 }
