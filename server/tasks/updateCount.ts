@@ -67,7 +67,7 @@ async function updatePlayersLeave(
     .updateTable("players")
     .set({ leave: currentTimestamp })
     .where("leave", "is", null);
-  if (playerList) cmd = cmd.where("uuid", "not in", playerList);
+  if (playerList.length) cmd = cmd.where("uuid", "not in", playerList);
 
   await cmd.execute();
 }
