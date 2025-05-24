@@ -34,10 +34,9 @@ export interface Database {
 
 pgTypes.setTypeParser(pgTypes.builtins.TIMESTAMPTZ, (val) => df.parseISO(val));
 
-const config = useConfig();
 export const db = new Kysely<Database>({
   dialect: new PostgresDialect({
-    pool: new Pool(config.db),
+    pool: config.db,
   }),
 });
 

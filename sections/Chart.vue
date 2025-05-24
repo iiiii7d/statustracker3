@@ -1,7 +1,6 @@
 <script lang="ts">
 import {
   Chart,
-  registerables,
   type ChartData,
   type Point,
   type ChartOptions,
@@ -97,6 +96,8 @@ export async function updatePlayer() {
 /* eslint-disable import/first */
 import { Line } from "vue-chartjs";
 
+const { data: categories } = await useFetch("/categories");
+
 const ALPHA = "f84210";
 
 // eslint-disable-next-line max-params
@@ -125,15 +126,14 @@ const chartData = computed<ChartData<"line", Point[]>>(() => ({
     .sort(([a], [b]) => b - a)
     .filter(([ma]) => ma !== 0 || shownMovingAverages[0])
     .flatMap(([ma, m], i) => {
-      const runtimeConfig = useRuntimeConfig();
       const allLine = generateLine(
         "all",
         "#fff",
-        m.map((a) => ({ x: a.timestamp, y: a.all })),
+        m.map((a) => ({ x: a.timestamp, y: a.all })) as unknown as Point[],
         i,
         ma,
       );
-      const catLines = Object.entries(runtimeConfig.public.categories).map(
+      const catLines = Object.entries(categories.value!).map(
         ([cat, { colour }]) =>
           generateLine(
             cat,
@@ -141,7 +141,7 @@ const chartData = computed<ChartData<"line", Point[]>>(() => ({
             m.map((a) => ({
               x: a.timestamp,
               y: a[`cat_${cat}`],
-            })),
+            })) as unknown as Point[],
             i,
             ma,
           ),

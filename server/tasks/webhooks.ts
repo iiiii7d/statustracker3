@@ -1,4 +1,4 @@
-import { AttachmentBuilder, WebhookClient } from "discord.js";
+import { AttachmentBuilder } from "discord.js";
 import { db } from "~/server/db";
 import * as df from "date-fns";
 import { CronExpressionParser } from "cron-parser";
@@ -10,8 +10,8 @@ export default defineTask({
   },
   // eslint-disable-next-line max-lines-per-function
   async run() {
-    const webhookConfig = useConfig().webhooks!;
-    const webhookClient = new WebhookClient(webhookConfig.client);
+    const webhookConfig = config.webhooks;
+    if (webhookConfig === undefined) return { result: "success" };
 
     await Promise.all(
       Object.entries(webhookConfig.schedules).map(
@@ -52,7 +52,7 @@ export default defineTask({
               const screenshot = await handle.screenshot();
 
               const attachment = new AttachmentBuilder(Buffer.from(screenshot));
-              await webhookClient.send({
+              await webhookConfig.client.send({
                 content: (
                   message ??
                   "[Server activity](%url%) (%id%) for past %range%\n-# from %from%\n-# to %to%"

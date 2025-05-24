@@ -1,17 +1,4 @@
 import pkg from "./package.json";
-import { getConfig } from "./server/utils/config";
-
-const config = getConfig();
-
-declare module "nuxt/schema" {
-  interface RuntimeConfig {
-    config: string;
-  }
-  interface PublicRuntimeConfig {
-    clientVersion: string;
-    categories: Config["categories"];
-  }
-}
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -34,20 +21,13 @@ export default defineNuxtConfig({
       tasks: true,
     },
     scheduledTasks: {
-      "* * * * *": [
-        "updateCount",
-        ...(config.webhooks === undefined && !process.env.NUXT_WEBHOOKS
-          ? []
-          : ["webhooks"]),
-      ],
+      "* * * * *": ["updateCount", "webhooks"],
     },
   },
 
   runtimeConfig: {
-    config: JSON.stringify(config),
     public: {
       clientVersion: pkg.version,
-      categories: config.categories ?? {},
     },
   },
 

@@ -1,12 +1,12 @@
 import { z } from "zod/v4";
-import { WebhookClientData } from "discord.js";
-import { PoolConfig } from "pg";
+import { WebhookClient, WebhookClientData } from "discord.js";
+import { Pool, PoolConfig } from "pg";
 import { Duration } from "date-fns";
 import * as fs from "node:fs";
 import logger from "./logger";
 
 const webhookConfigSchema = z.object({
-  client: z.custom<WebhookClientData>(),
+  client: z.custom<WebhookClientData>().transform((a) => new WebhookClient(a)),
   serverUrl: z.string(),
   schedules: z.record(
     z.string(),
@@ -19,13 +19,13 @@ const webhookConfigSchema = z.object({
 });
 const configSchema = z.object({
   dynmapLink: z.url(),
-  db: z.custom<PoolConfig>(),
+  db: z.custom<PoolConfig>().transform((a) => new Pool(a)),
   categories: z
     .record(
       z.string(),
       z.object({
         uuids: z.uuid().array(),
-        colour: z.regex(/^#(?:[0-9a-f]{3}){1,2}$/u),
+        colour: z.string().regex(/^#(?:[0-9a-f]{3}){1,2}$/u),
       }),
     )
     .default({}),
@@ -35,23 +35,23 @@ const configSchema = z.object({
 });
 
 export type Config = z.infer<typeof configSchema>;
-export type WebhookConfig = z.infer<typeof webhookConfigSchema>;
 
 // eslint-disable-next-line max-statements
 export function getConfig(): Config {
-  if (process.env.NUXT_CONFIG) {
-    logger.info("Using config found in `NUXT_CONFIG`");
-    const config = configSchema.parse(JSON.parse(process.env.NUXT_CONFIG));
-    process.env.NUXT_CONFIG = JSON.stringify(config);
-    return config;
+  if (process.env.CONFIG) {
+    logger.info("Using config found in `CONFIG`");
+    return configSchema.parse(JSON.parse(process.env.CONFIG));
   }
+
   const configPath = process.env.CONFIG_PATH ?? "config.json";
   if (fs.existsSync(configPath)) {
     logger.info(`Using config found in \`${configPath}\``);
     return configSchema.parse(
       JSON.parse(fs.readFileSync(configPath).toString()),
     );
-  } else if (!process.env.CONFIG_PATH) {
+  }
+
+  if (!process.env.CONFIG_PATH && process.env.NODE_ENV !== "production") {
     logger.info("Using default config");
     return configSchema.parse({
       dynmapLink:
@@ -64,10 +64,8 @@ export function getConfig(): Config {
       },
     });
   }
-  throw Error(`Could not find config at ${configPath}`);
-}
 
-export function useConfig(): Config {
-  const { config } = useRuntimeConfig();
-  return typeof config === "string" ? JSON.parse(config) : config;
+  logger.emerg(`Could not find config at ${configPath}`);
+  process.exit(1);
 }
+export const config = getConfig();

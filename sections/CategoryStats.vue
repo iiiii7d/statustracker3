@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { counts } from "~/sections/Chart.vue";
 
-const runtimeConfig = useRuntimeConfig();
+const { data: categories } = await useFetch("/categories");
 
 function percentage(column: "all" | `cat_${string}`): number {
   const count2 = counts.value.get(0);
@@ -21,10 +21,7 @@ function percentage(column: "all" | `cat_${string}`): number {
     period</span
   ><br />
   <u>By category:</u><br />
-  <span
-    v-for="[name, cat] in Object.entries(runtimeConfig.public.categories)"
-    :key="name"
-  >
+  <span v-for="[name, cat] in Object.entries(categories!)" :key="name">
     &nbsp;&nbsp;<b :style="{ color: cat.colour }">{{ name }}: </b>
     {{ percentage(`cat_${cat}`) }}%<br />
   </span>

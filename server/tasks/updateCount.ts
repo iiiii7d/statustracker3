@@ -2,7 +2,6 @@ import { Database, db } from "../db";
 import { sql, Transaction } from "kysely";
 
 async function currentPlayerList(): Promise<string[]> {
-  const config = useConfig();
   logger.info(`Retrieving current player list from ${config.dynmapLink}`);
 
   const res = (await (await fetch(config.dynmapLink)).json()) as {
@@ -17,8 +16,6 @@ async function currentPlayerList(): Promise<string[]> {
 }
 
 async function updateCounts(trx: Transaction<Database>, playerList: string[]) {
-  const config = useConfig();
-
   logger.info("Updating `counts` table");
   await trx
     .insertInto("counts")

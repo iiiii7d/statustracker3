@@ -1,6 +1,6 @@
-import { db } from "~/server/db";
+import { CountTable, db } from "~/server/db";
 import { z } from "zod/v4";
-import { sql } from "kysely";
+import { Selectable, sql } from "kysely";
 import * as df from "date-fns";
 
 const schema = z.object({
@@ -20,7 +20,7 @@ const schema = z.object({
 // eslint-disable-next-line max-lines-per-function
 export default defineEventHandler(async (event) => {
   logger.info(`Processing ${event.path}`);
-  const config = useConfig();
+
   const { from, to, movingAverage } = await getValidatedQuery(event, (body) =>
     schema.parse(body),
   );
@@ -33,7 +33,7 @@ export default defineEventHandler(async (event) => {
 
   const ma = `${movingAverage} hours`;
 
-  return await db
+  return (await db
     .with("temp", (qc) =>
       qc
         .selectFrom("counts")
@@ -72,5 +72,5 @@ export default defineEventHandler(async (event) => {
     .where(
       sql<boolean>`count <= ${config.countsApproxMaxLength} OR MOD(row_n, (count/${config.countsApproxMaxLength})) = 0`,
     )
-    .execute();
+    .execute()) as Selectable<CountTable>[];
 });
