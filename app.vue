@@ -1,3 +1,11 @@
+<script setup lang="ts">
+const route = useRoute();
+if (route.path !== "/")
+  throw createError({
+    statusCode: 404,
+    statusMessage: "Not Found",
+  });
+</script>
 <template>
   <Chart />
   <Input />
