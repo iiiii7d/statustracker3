@@ -91,12 +91,14 @@ async function closePlayerEntriesIfPaused(trx: Transaction<Database>) {
     return;
 
   logger.info("Server was paused. Completing last player entries");
-  const lastTimestamp = (await trx
-    .selectFrom("counts")
-    .select("timestamp")
-    .orderBy("timestamp", "desc")
-    .where("timestamp", "!=", currentTimestamp)
-    .executeTakeFirst())?.timestamp;
+  const lastTimestamp = (
+    await trx
+      .selectFrom("counts")
+      .select("timestamp")
+      .orderBy("timestamp", "desc")
+      .where("timestamp", "!=", currentTimestamp)
+      .executeTakeFirst()
+  )?.timestamp;
 
   if (lastTimestamp === undefined) return;
 
