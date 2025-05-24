@@ -8,14 +8,16 @@ import logger from "./logger";
 const webhookConfigSchema = z.object({
   client: z.custom<WebhookClientData>().transform((a) => new WebhookClient(a)),
   serverUrl: z.string(),
-  schedules: z.record(
-    z.string(),
-    z.object({
-      cron: z.string(),
-      range: z.custom<Duration>(),
-      message: z.string().optional(),
-    }),
-  ),
+  schedules: z
+    .record(
+      z.string(),
+      z.object({
+        cron: z.string(),
+        range: z.custom<Duration>(),
+        message: z.string().optional(),
+      }),
+    )
+    .refine((a) => Object.keys(a).length >= 1),
 });
 const configSchema = z.object({
   dynmapLink: z.url(),

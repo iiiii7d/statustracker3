@@ -63,22 +63,13 @@ async function updatePlayersLeave(
   playerList: string[],
 ) {
   logger.info("Updating `players` table for left players");
-  await Promise.all(
-    (
-      await trx
-        .selectFrom("players")
-        .select("id")
-        .where("leave", "is", null)
-        .where("uuid", "not in", playerList)
-        .execute()
-    ).map(async (result) => {
-      await trx
-        .updateTable("players")
-        .set({ leave: currentTimestamp })
-        .where("id", "=", result.id)
-        .execute();
-    }),
-  );
+  let cmd = trx
+    .updateTable("players")
+    .set({ leave: currentTimestamp })
+    .where("leave", "is", null);
+  if (playerList) cmd = cmd.where("uuid", "not in", playerList);
+
+  await cmd.execute();
 }
 
 async function closePlayerEntriesIfPaused(trx: Transaction<Database>) {
