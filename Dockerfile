@@ -3,10 +3,10 @@ FROM node:24-alpine AS build
 RUN corepack enable
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN pnpm i && pnpm run gen-licenses
+RUN pnpm i
 
 COPY . .
-RUN pnpm run build
+RUN pnpm run gen-licenses && pnpm run build
 
 FROM node:24-alpine
 
