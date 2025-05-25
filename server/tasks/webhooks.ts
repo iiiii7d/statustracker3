@@ -51,9 +51,11 @@ export default defineTask({
               const inputFrom = df.formatISO(from).replace(/(?:Z|\+.*)$/u, "");
               await page.locator("input#from").fill(inputFrom);
               await page.locator("button#query").click();
+              for (let i = 0; i < 15; i += 1) {
               // eslint-disable-next-line no-await-in-loop
-              while ((await page.$("span#player-stats")) === null) {
-                //
+                if ((await page.$("span#player-stats")) === null) break;
+              // eslint-disable-next-line no-await-in-loop
+                await new Promise(r => setTimeout(r, 1000))
               }
 
               const handle = (await page.waitForSelector("canvas"))!;
