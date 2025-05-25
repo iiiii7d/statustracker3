@@ -35,7 +35,14 @@ export default defineTask({
             const from = df.sub(new Date(), range);
             const to = new Date();
 
-            const browser = await puppeteer.launch();
+            const browser = await puppeteer.launch({
+              ...(process.env.DOCKER ? {
+                headless: true,
+                executablePath: "/usr/bin/google-chrome",
+                args: ["--no-sandbox"]
+              } : {}),
+              ...(webhookConfig.puppeteer ?? {})
+            })
             try {
               const page = await browser.newPage();
               await page.goto(webhookConfig.serverUrl);

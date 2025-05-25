@@ -4,6 +4,7 @@ import { Pool, PoolConfig } from "pg";
 import { Duration } from "date-fns";
 import * as fs from "node:fs";
 import logger from "./logger";
+import { LaunchOptions } from "puppeteer";
 
 const webhookConfigSchema = z.object({
   client: z.custom<WebhookClientData>().transform((a) => new WebhookClient(a)),
@@ -18,6 +19,7 @@ const webhookConfigSchema = z.object({
       }),
     )
     .refine((a) => Object.keys(a).length >= 1),
+  puppeteer: z.custom<LaunchOptions>().optional()
 });
 const configSchema = z.object({
   dynmapLink: z.url(),
