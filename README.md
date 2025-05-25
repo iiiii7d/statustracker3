@@ -128,6 +128,7 @@ services:
   // Approximate maximum number of data points returned by the `/counts` endpoint
   // for display in the chart
   // Prevents response being too large
+  // OPTIONAL
   "countsApproxMaxLength": 1000,
 }
 ```
