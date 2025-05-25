@@ -18,6 +18,10 @@ const inputTo = useState("inputTo", () => "");
 const inputPlayer = useState("player", () => "");
 const loading = useState("loading", () => 0);
 
+function setFrom(d: df.Duration) {
+  inputFrom.value = dateToInputValue(df.sub(new Date(), d));
+}
+
 function getDefaultFromTo(): [Date, Date] {
   const { query: routeQuery } = useRoute();
   const { error } = z
@@ -96,6 +100,12 @@ onMounted(() => {
 
   <label for="from">Show activity from </label
   ><input id="from" v-model="inputFrom" type="datetime-local" />
+  <br v-if="mobile" />
+
+  <button @click="setFrom({ days: 1 })">past day</button>&nbsp;
+  <button @click="setFrom({ weeks: 1 })">past week</button>&nbsp;
+  <button @click="setFrom({ months: 1 })">past month</button>&nbsp;
+  <button @click="setFrom({ years: 1 })">past year</button>&nbsp;
   <br v-if="mobile" />
 
   <label for="to">to </label

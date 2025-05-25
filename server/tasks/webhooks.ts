@@ -36,13 +36,15 @@ export default defineTask({
             const to = new Date();
 
             const browser = await puppeteer.launch({
-              ...(process.env.DOCKER ? {
-                headless: true,
-                executablePath: "/usr/bin/google-chrome",
-                args: ["--no-sandbox"]
-              } : {}),
-              ...(webhookConfig.puppeteer ?? {})
-            })
+              ...(process.env.DOCKER
+                ? {
+                    headless: true,
+                    executablePath: "/usr/bin/google-chrome",
+                    args: ["--no-sandbox"],
+                  }
+                : {}),
+              ...(webhookConfig.puppeteer ?? {}),
+            });
             try {
               const page = await browser.newPage();
               await page.goto(webhookConfig.serverUrl);
@@ -52,10 +54,10 @@ export default defineTask({
               await page.locator("input#from").fill(inputFrom);
               await page.locator("button#query").click();
               for (let i = 0; i < 15; i += 1) {
-              // eslint-disable-next-line no-await-in-loop
+                // eslint-disable-next-line no-await-in-loop
                 if ((await page.$("span#player-stats")) === null) break;
-              // eslint-disable-next-line no-await-in-loop
-                await new Promise(r => setTimeout(r, 1000))
+                // eslint-disable-next-line no-await-in-loop
+                await new Promise((r) => setTimeout(r, 1000));
               }
 
               const handle = (await page.waitForSelector("canvas"))!;
