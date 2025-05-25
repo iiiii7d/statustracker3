@@ -4,7 +4,7 @@ RUN corepack enable
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN pnpm i
+RUN pnpm i -P
 
 COPY . .
 RUN pnpm run gen-licenses && pnpm run build
