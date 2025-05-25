@@ -65,7 +65,7 @@ export default defineTask({
               await webhookConfig.client.send({
                 content: (
                   message ??
-                  "[Server activity](%url%) (%id%) for past %range%\n-# from %from%\n-# to %to%"
+                  "[Server activity](%url%) (%id%) for past %range%\n-# from <t:%from%:F>\n-# to <t:%to%:F>"
                 )
                   .replaceAll(
                     "%url%",
@@ -73,8 +73,8 @@ export default defineTask({
                   )
                   .replaceAll("%id%", id)
                   .replaceAll("%range%", df.formatDuration(range))
-                  .replaceAll("%from%", from.toString())
-                  .replaceAll("%to%", to.toString()),
+                  .replaceAll("%from%", from.getTime())
+                  .replaceAll("%to%", to.getTime()),
                 files: [attachment],
               });
               logger.info(`Webhook run \`${id}\` successful`);
