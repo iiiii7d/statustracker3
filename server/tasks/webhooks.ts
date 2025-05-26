@@ -47,6 +47,7 @@ export default defineTask({
             });
             try {
               const page = await browser.newPage();
+              await page.emulateTimezone(webhookConfig.puppeteer?.timezone)
               await page.goto(webhookConfig.serverUrl);
               await page.setViewport({ width: 1920, height: 1080 });
 

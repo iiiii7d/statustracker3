@@ -109,15 +109,17 @@ services:
         "range": { "hours": 2, "minutes": 30 },
       },
     },
-  },
 
-  // Puppeteer is used to generate the image in the webhooks.
-  // See below for more information:
-  // https://pptr.dev/api/puppeteer.launchoptions
-  // https://pptr.dev/api/puppeteer.clientoptions
-  // OPTIONAL
-  "puppeteer": {
-    "timeout": 0,
+    // Puppeteer is used to generate the image in the webhooks.
+    // See below for more information:
+    // https://pptr.dev/api/puppeteer.launchoptions
+    // https://pptr.dev/api/puppeteer.clientoptions
+    // + additional optional `timezone` field
+    // OPTIONAL
+    "puppeteer": {
+      "timeout": 0,
+      "timezone": "Asia/Singapore",
+    },
   },
 
   // if any category gets removed in this config file,
