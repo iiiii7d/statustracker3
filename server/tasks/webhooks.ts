@@ -76,8 +76,8 @@ export default defineTask({
                   )
                   .replaceAll("%id%", id)
                   .replaceAll("%range%", df.formatDuration(range))
-                  .replaceAll("%from%", from.getTime()/1000)
-                  .replaceAll("%to%", to.getTime()/1000),
+                  .replaceAll("%from%", Math.round(from.getTime()/1000))
+                  .replaceAll("%to%", Math.round(to.getTime()/1000)),
                 files: [attachment],
               });
               logger.info(`Webhook run \`${id}\` successful`);
