@@ -19,7 +19,9 @@ const inputPlayer = useState("player", () => "");
 const loading = useState("loading", () => 0);
 
 function setFrom(d: df.Duration) {
-  inputFrom.value = dateToInputValue(df.sub(new Date(), d));
+  inputFrom.value = dateToInputValue(
+    df.roundToNearestMinutes(df.sub(new Date(), d)),
+  );
 }
 
 function getDefaultFromTo(): [Date, Date] {

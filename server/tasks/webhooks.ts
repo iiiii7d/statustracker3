@@ -47,7 +47,7 @@ export default defineTask({
             });
             try {
               const page = await browser.newPage();
-              await page.emulateTimezone(webhookConfig.puppeteer?.timezone)
+              await page.emulateTimezone(webhookConfig.puppeteer?.timezone);
               await page.goto(webhookConfig.serverUrl);
               await page.setViewport({ width: 1920, height: 1080 });
 
@@ -58,7 +58,9 @@ export default defineTask({
                 // eslint-disable-next-line no-await-in-loop
                 if ((await page.$("span#player-stats")) === null) break;
                 // eslint-disable-next-line no-await-in-loop
-                await new Promise((r) => setTimeout(r, 1000));
+                await new Promise((r) => {
+                  setTimeout(r, 1000);
+                });
               }
 
               const handle = (await page.waitForSelector("canvas"))!;
@@ -76,8 +78,8 @@ export default defineTask({
                   )
                   .replaceAll("%id%", id)
                   .replaceAll("%range%", df.formatDuration(range))
-                  .replaceAll("%from%", Math.round(from.getTime()/1000))
-                  .replaceAll("%to%", Math.round(to.getTime()/1000)),
+                  .replaceAll("%from%", Math.round(from.getTime() / 1000))
+                  .replaceAll("%to%", Math.round(to.getTime() / 1000)),
                 files: [attachment],
               });
               logger.info(`Webhook run \`${id}\` successful`);
