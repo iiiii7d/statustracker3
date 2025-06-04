@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
 import { sql } from "kysely";
 import * as df from "date-fns";
-import { getDB } from "~/server/db";
+import { getDB } from "~~/server/db";
 
 const schema = z.object({
   from: z.iso

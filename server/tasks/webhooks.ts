@@ -2,7 +2,7 @@ import { AttachmentBuilder } from "discord.js";
 import * as df from "date-fns";
 import { CronExpressionParser } from "cron-parser";
 import puppeteer from "puppeteer";
-import { getDB } from "~/server/db";
+import { getDB } from "~~/server/db";
 
 export default defineTask({
   meta: {
