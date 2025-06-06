@@ -15,7 +15,7 @@ function percentage(column: "all" | `cat_${string}`): number {
 </script>
 
 <template>
-  <section id="statistics">
+  <section id="statistics" style="width: fit-content">
     <h3>Statistics</h3>
     <span
       >People were online <b>{{ percentage("all") }}%</b> of this time
