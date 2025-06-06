@@ -15,7 +15,11 @@ const webhookConfigSchema = z.object({
       z.object({
         cron: z.string(),
         range: z.custom<Duration>(),
-        message: z.string().optional(),
+        message: z
+          .string()
+          .default(
+            "[Server activity](%url%) (%id%) for past %range%\n-# from <t:%from%:F>\n-# to <t:%to%:F>",
+          ),
       }),
     )
     .refine((a) => Object.keys(a).length >= 1),

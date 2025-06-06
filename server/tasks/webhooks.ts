@@ -76,10 +76,7 @@ export default defineTask({
               );
 
               await webhookConfig.client.send({
-                content: (
-                  message ??
-                  "[Server activity](%url%) (%id%) for past %range%\n-# from <t:%from%:F>\n-# to <t:%to%:F>"
-                )
+                content: message
                   .replaceAll(
                     "%url%",
                     `${webhookConfig.serverUrl}?from=${from.toISOString()}&to=${to.toISOString()}`,
