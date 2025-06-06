@@ -28,7 +28,6 @@
     "winston": "^3.17.0",
     "zod": "^3.25.55"
   },
-  "packageManager": "pnpm@10.11.0+sha512.6540583f41cc5f628eb3d9773ecee802f4f9ef9923cc45b69890fb47991d4b092964694ec3a4f738a420c918a333062c8b925d312f42e4f0c263eb603551f977",
   "devDependencies": {
     "@eslint/js": "^9.28.0",
     "@types/pg": "^8.15.4",
@@ -44,5 +43,19 @@
     "cron-parser": "^5.2.0",
     "discord.js": "^14.19.3",
     "puppeteer": "^24.10.0"
-  }
+  },
+  "overrides": {
+    "@discordjs/rest": {
+      "undici": "^6.21.3"
+    },
+    "discord.js": {
+      "undici": "^6.21.3"
+    }
+  },
+  "pnpm": {
+    "overrides": {
+      "undici": "^6.21.3"
+    }
+  },
+  "packageManager": "pnpm@10.11.1+sha512.e519b9f7639869dc8d5c3c5dfef73b3f091094b0a006d7317353c72b124e80e1afd429732e28705ad6bfa1ee879c1fce46c128ccebd3192101f43dd67c667912"
 }
