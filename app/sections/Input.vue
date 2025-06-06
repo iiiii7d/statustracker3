@@ -95,67 +95,69 @@ onMounted(() => {
 </script>
 
 <template>
-  <b style="font-size: 1.5em; color: #fc0">
-    StatusTracker v{{ $config.public.clientVersion
-    }}<span v-if="!mobile">&nbsp;&nbsp;|&nbsp;&nbsp;</span><br v-else />
-  </b>
+  <section id="input">
+    <b style="font-size: 1.5em; color: #fc0">
+      StatusTracker v{{ $config.public.clientVersion
+      }}<span v-if="!mobile">&nbsp;&nbsp;|&nbsp;&nbsp;</span><br v-else />
+    </b>
 
-  <label for="from">Show activity from </label
-  ><input id="from" v-model="inputFrom" type="datetime-local" />
-  <br v-if="mobile" />
+    <label for="from">Show activity from </label
+    ><input id="from" v-model="inputFrom" type="datetime-local" />
+    <br v-if="mobile" />
 
-  <button @click="setFrom({ days: 1 })">past day</button>&nbsp;
-  <button @click="setFrom({ weeks: 1 })">past week</button>&nbsp;
-  <button @click="setFrom({ months: 1 })">past month</button>&nbsp;
-  <button @click="setFrom({ years: 1 })">past year</button>&nbsp;
-  <br v-if="mobile" />
+    <button @click="setFrom({ days: 1 })">past day</button>&nbsp;
+    <button @click="setFrom({ weeks: 1 })">past week</button>&nbsp;
+    <button @click="setFrom({ months: 1 })">past month</button>&nbsp;
+    <button @click="setFrom({ years: 1 })">past year</button>&nbsp;
+    <br v-if="mobile" />
 
-  <label for="to">to </label
-  ><input id="to" v-model="inputTo" type="datetime-local" />
-  <br v-if="mobile" />
+    <label for="to">to </label
+    ><input id="to" v-model="inputTo" type="datetime-local" />
+    <br v-if="mobile" />
 
-  <label for="player">for player </label
-  ><input
-    id="player"
-    v-model="inputPlayer"
-    type="text"
-    placeholder="username"
-  />
-  &nbsp;
-  <button id="query" @click="query">Query</button><br />
+    <label for="player">for player </label
+    ><input
+      id="player"
+      v-model="inputPlayer"
+      type="text"
+      placeholder="username"
+    />
+    &nbsp;
+    <button id="query" @click="query">Query</button><br />
 
-  <span v-if="loading !== 0" id="player-stats">Loading...</span>
-  <span
-    v-else-if="player !== null && player.playTimes.length === 0"
-    id="player-stats"
-  >
-    <b>{{ shownPlayer }}</b> did not join within this time period
-  </span>
-  <span v-else-if="player !== null" id="player-stats">
-    <b>{{ shownPlayer }}</b> played for <b>{{ playDuration }}</b> within this
-    time period
-  </span>
-  <span v-else-if="shownPlayer !== ''" id="player-stats">
-    Player <b>{{ shownPlayer }}</b> does not exist
-  </span>
+    <span v-if="loading !== 0" id="player-stats">Loading...</span>
+    <span
+      v-else-if="player !== null && player.playTimes.length === 0"
+      id="player-stats"
+    >
+      <b>{{ shownPlayer }}</b> did not join within this time period
+    </span>
+    <span v-else-if="player !== null" id="player-stats">
+      <b>{{ shownPlayer }}</b> played for <b>{{ playDuration }}</b> within this
+      time period
+    </span>
+    <span v-else-if="shownPlayer !== ''" id="player-stats">
+      Player <b>{{ shownPlayer }}</b> does not exist
+    </span>
 
-  <br />
-  <span>Rolling Averages </span>
-  <CheckboxButton v-model="shownMovingAverages[0]" @click="updateCounts"
-    >Raw</CheckboxButton
-  >&nbsp;
-  <CheckboxButton v-model="shownMovingAverages[1]" @click="updateCounts"
-    >1h</CheckboxButton
-  >&nbsp;
-  <CheckboxButton v-model="shownMovingAverages[12]" @click="updateCounts"
-    >12h</CheckboxButton
-  >&nbsp;
-  <CheckboxButton v-model="shownMovingAverages[24]" @click="updateCounts"
-    >1d</CheckboxButton
-  >&nbsp;
-  <CheckboxButton v-model="shownMovingAverages[168]" @click="updateCounts"
-    >7d</CheckboxButton
-  >
+    <br />
+    <span>Rolling Averages </span>
+    <CheckboxButton v-model="shownMovingAverages[0]" @click="updateCounts"
+      >Raw</CheckboxButton
+    >&nbsp;
+    <CheckboxButton v-model="shownMovingAverages[1]" @click="updateCounts"
+      >1h</CheckboxButton
+    >&nbsp;
+    <CheckboxButton v-model="shownMovingAverages[12]" @click="updateCounts"
+      >12h</CheckboxButton
+    >&nbsp;
+    <CheckboxButton v-model="shownMovingAverages[24]" @click="updateCounts"
+      >1d</CheckboxButton
+    >&nbsp;
+    <CheckboxButton v-model="shownMovingAverages[168]" @click="updateCounts"
+      >7d</CheckboxButton
+    >
+  </section>
 </template>
 
 <style scoped>

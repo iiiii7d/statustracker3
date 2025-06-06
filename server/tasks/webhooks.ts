@@ -63,10 +63,18 @@ export default defineTask({
                 });
               }
 
-              const handle = (await page.waitForSelector("canvas"))!;
-              const screenshot = await handle.screenshot();
+              const handle1 = (await page.waitForSelector("canvas"))!;
+              const screenshot1 = await handle1.screenshot();
+              const attachment1 = new AttachmentBuilder(
+                Buffer.from(screenshot1),
+              );
 
-              const attachment = new AttachmentBuilder(Buffer.from(screenshot));
+              const handle2 = (await page.waitForSelector("#statistics"))!;
+              const screenshot2 = await handle2.screenshot();
+              const attachment2 = new AttachmentBuilder(
+                Buffer.from(screenshot2),
+              );
+
               await webhookConfig.client.send({
                 content: (
                   message ??
@@ -78,9 +86,15 @@ export default defineTask({
                   )
                   .replaceAll("%id%", id)
                   .replaceAll("%range%", df.formatDuration(range))
-                  .replaceAll("%from%", Math.round(from.getTime() / 1000))
-                  .replaceAll("%to%", Math.round(to.getTime() / 1000)),
-                files: [attachment],
+                  .replaceAll(
+                    "%from%",
+                    Math.round(from.getTime() / 1000).toString(),
+                  )
+                  .replaceAll(
+                    "%to%",
+                    Math.round(to.getTime() / 1000).toString(),
+                  ),
+                files: [attachment1, attachment2],
               });
               logger.info(`Webhook run \`${id}\` successful`);
             } finally {

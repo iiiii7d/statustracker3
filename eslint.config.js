@@ -6,7 +6,7 @@ import pluginVue from "eslint-plugin-vue";
 import prettierConfig from "eslint-config-prettier";
 import tseslint from "typescript-eslint";
 import vueParser from "vue-eslint-parser";
-import withNuxt from ".nuxt/eslint.config.mjs";
+import withNuxt from "./.nuxt/eslint.config.mjs";
 
 export default withNuxt(
   pluginJs.configs.all,

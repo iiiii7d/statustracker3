@@ -19,7 +19,7 @@ const webhookConfigSchema = z.object({
       }),
     )
     .refine((a) => Object.keys(a).length >= 1),
-  puppeteer: z.custom<LaunchOptions | { timezone?: string }>().optional(),
+  puppeteer: z.custom<LaunchOptions & { timezone?: string }>().optional(),
 });
 const configSchema = z.object({
   dynmapLink: z.url(),

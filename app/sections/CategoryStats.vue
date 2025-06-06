@@ -15,16 +15,18 @@ function percentage(column: "all" | `cat_${string}`): number {
 </script>
 
 <template>
-  <h3>Statistics</h3>
-  <span
-    >People were online <b>{{ percentage("all") }}%</b> of this time
-    period</span
-  ><br />
-  <u>By category:</u><br />
-  <span v-for="[name, { colour }] in Object.entries(categories!)" :key="name">
-    &nbsp;&nbsp;<b :style="{ color: colour }">{{ name }}: </b>
-    {{ percentage(`cat_${name}`) }}%<br />
-  </span>
+  <section id="statistics">
+    <h3>Statistics</h3>
+    <span
+      >People were online <b>{{ percentage("all") }}%</b> of this time
+      period</span
+    ><br />
+    <u>By category:</u><br />
+    <span v-for="[name, { colour }] in Object.entries(categories!)" :key="name">
+      &nbsp;&nbsp;<b :style="{ color: colour }">{{ name }}: </b>
+      {{ percentage(`cat_${name}`) }}%<br />
+    </span>
+  </section>
 </template>
 
 <style scoped></style>
