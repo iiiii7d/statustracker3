@@ -48,8 +48,8 @@ importers:
         specifier: ^3.17.0
         version: 3.17.0
       zod:
-        specifier: ^3.25.55
-        version: 3.25.55
+        specifier: ^3.25.56
+        version: 3.25.56
     devDependencies:
       '@eslint/js':
         specifier: ^9.28.0
@@ -4539,8 +4539,8 @@ packages:
     resolution: {integrity: sha512-zK7YHHz4ZXpW89AHXUPbQVGKI7uvkd3hzusTdotCg1UxyaVtg0zFJSTfW/Dq5f7OBBVnq6cZIaC8Ti4hb6dtCA==}
     engines: {node: '>= 14'}
 
-  zod@3.25.55:
-    resolution: {integrity: sha512-219huNnkSLQnLsQ3uaRjXsxMrVm5C9W3OOpEVt2k5tvMKuA8nBSu38e0B//a+he9Iq2dvmk2VyYVlHqiHa4YBA==}
+  zod@3.25.56:
+    resolution: {integrity: sha512-rd6eEF3BTNvQnR2e2wwolfTmUTnp70aUTqr0oaGbHifzC3BKJsoV+Gat8vxUMR1hwOKBs6El+qWehrHbCpW6SQ==}
 
 snapshots:
 
@@ -5152,7 +5152,7 @@ snapshots:
       unixify: 1.0.0
       urlpattern-polyfill: 8.0.2
       yargs: 17.7.2
-      zod: 3.25.55
+      zod: 3.25.56
     transitivePeerDependencies:
       - encoding
       - rollup
@@ -6391,7 +6391,7 @@ snapshots:
     dependencies:
       devtools-protocol: 0.0.1452169
       mitt: 3.0.1
-      zod: 3.25.55
+      zod: 3.25.56
     optional: true
 
   ci-info@4.2.0: {}
@@ -9553,4 +9553,4 @@ snapshots:
       compress-commons: 6.0.2
       readable-stream: 4.7.0
 
-  zod@3.25.55: {}
+  zod@3.25.56: {}
