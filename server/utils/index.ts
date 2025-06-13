@@ -10,8 +10,12 @@ export async function nameToUUID(name: string): Promise<string | null> {
   if (c !== undefined) return c;
 
   const res = await fetch(
-    `https://api.mojang.com/users/profiles/minecraft/${name}`,
+    `https://api.minecraftservices.com/minecraft/profile/lookup/name/${name}`,
   );
+  if (res.status !== 200 && res.status !== 404)
+    throw Error(
+      `${config.dynmapLink} returned ${res.status}:\n${await res.text()}`,
+    );
   const uuid = res.status === 404 ? null : (await res.json()).id;
   cache.set(name, uuid);
   logger.verbose(`Found that \`${name}\` has UUID \`${uuid}\``);

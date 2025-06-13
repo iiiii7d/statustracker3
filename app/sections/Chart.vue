@@ -56,14 +56,19 @@ export async function updateCounts() {
         .filter(([ma, a]) => ma === "0" || a)
         .map(async ([ma2]) => {
           const ma = parseInt(ma2) as MovingAverage;
-          const data = await $fetch("/counts", {
-            query: {
-              from: from.value.toISOString(),
-              to: to.value.toISOString(),
-              movingAverage: ma,
-            },
-          });
-          return [ma, data] as [
+          const { data } = await useAsyncData(
+            `counts:${from.value}:${to.value}:${ma}`,
+            () =>
+              $fetch("/counts", {
+                query: {
+                  from: from.value.toISOString(),
+                  to: to.value.toISOString(),
+                  movingAverage: ma,
+                },
+              }),
+            { deep: false },
+          );
+          return [ma, data.value] as [
             MovingAverage,
             InternalApi["/counts"]["default"],
           ];
@@ -77,12 +82,19 @@ export async function updatePlayer() {
     player.value =
       shownPlayer.value === ""
         ? null
-        : await $fetch(`/player/${shownPlayer.value}`, {
-            query: {
-              from: from.value.toISOString(),
-              to: to.value.toISOString(),
-            },
-          });
+        : (
+            await useAsyncData(
+              `playe vr:${shownPlayer.value}:${from.value}:${to.value}`,
+              () =>
+                $fetch(`/player/${shownPlayer.value}`, {
+                  query: {
+                    from: from.value.toISOString(),
+                    to: to.value.toISOString(),
+                  },
+                }),
+              { deep: false },
+            )
+          ).data.value!;
   } catch (e) {
     if (e instanceof FetchError && e.status === 404) {
       player.value = null;

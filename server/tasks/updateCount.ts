@@ -4,10 +4,15 @@ import { sql, Transaction } from "kysely";
 async function currentPlayerList(): Promise<string[]> {
   logger.info(`Retrieving current player list from ${config.dynmapLink}`);
 
-  const res = (await (await fetch(config.dynmapLink)).json()) as {
+  const res = await fetch(config.dynmapLink);
+  if (res.status !== 200)
+    throw Error(
+      `${config.dynmapLink} returned ${res.status}:\n${await res.text()}`,
+    );
+  const json = (await res.json()) as {
     players: { account: string }[];
   };
-  const playerNames = res.players.map((a) => a.account);
+  const playerNames = json.players.map((a) => a.account);
   const playerUuids = (
     await Promise.all(playerNames.map((a) => nameToUUID(a)))
   ).filter((a) => a !== null);
