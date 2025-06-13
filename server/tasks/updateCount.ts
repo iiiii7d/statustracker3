@@ -5,8 +5,11 @@ async function currentPlayerList(): Promise<string[]> {
   logger.info(`Retrieving current player list from ${config.dynmapLink}`);
 
   const res = await fetch(config.dynmapLink);
-  if (res.status !== 200) throw Error(`${config.dynmapLink} returned ${res.status}:\n${await res.text()}`)
-  const json = await res.json() as {
+  if (res.status !== 200)
+    throw Error(
+      `${config.dynmapLink} returned ${res.status}:\n${await res.text()}`,
+    );
+  const json = (await res.json()) as {
     players: { account: string }[];
   };
   const playerNames = json.players.map((a) => a.account);
