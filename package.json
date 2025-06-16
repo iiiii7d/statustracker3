@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@nuxt/eslint": "1.4.1",
-    "chart.js": "^4.4.9",
+    "chart.js": "^4.5.0",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-annotation": "^3.1.0",
     "date-fns": "^4.1.0",
