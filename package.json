@@ -14,12 +14,12 @@
     "gen-licenses": "pnpm licenses ls --long -P > public/licenses.txt"
   },
   "dependencies": {
-    "@nuxt/eslint": "1.5.2",
+    "@nuxt/eslint": "1.6.0",
     "chart.js": "^4.5.0",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-annotation": "^3.1.0",
     "date-fns": "^4.1.0",
-    "kysely": "^0.28.2",
+    "kysely": "^0.28.3",
     "nuxt": "^4.0.0",
     "pg": "^8.16.3",
     "vue": "^3.5.17",
@@ -33,7 +33,7 @@
     "@types/pg": "^8.15.4",
     "eslint": "^9.31.0",
     "eslint-config-flat-gitignore": "^2.1.0",
-    "eslint-config-prettier": "^10.1.5",
+    "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-vue": "^10.3.0",
     "globals": "^16.3.0",
     "prettier": "^3.6.2",
@@ -43,7 +43,7 @@
   "optionalDependencies": {
     "cron-parser": "^5.3.0",
     "discord.js": "^14.21.0",
-    "puppeteer": "^24.13.0"
+    "puppeteer": "^24.14.0"
   },
   "overrides": {
     "@discordjs/rest": {
@@ -57,6 +57,5 @@
     "overrides": {
       "undici": "^6.21.3"
     }
-  },
-  "packageManager": "pnpm@10.12.1+sha512.f0dda8580f0ee9481c5c79a1d927b9164f2c478e90992ad268bbb2465a736984391d6333d2c327913578b2804af33474ca554ba29c04a8b13060a717675ae3ac"
+  }
 }
