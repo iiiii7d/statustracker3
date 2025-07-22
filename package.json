@@ -14,7 +14,7 @@
     "gen-licenses": "pnpm licenses ls --long -P > public/licenses.txt"
   },
   "dependencies": {
-    "@nuxt/eslint": "1.6.0",
+    "@nuxt/eslint": "1.7.0",
     "chart.js": "^4.5.0",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-annotation": "^3.1.0",
@@ -37,7 +37,7 @@
     "eslint-plugin-vue": "^10.3.0",
     "globals": "^16.3.0",
     "prettier": "^3.6.2",
-    "typescript-eslint": "^8.37.0",
+    "typescript-eslint": "^8.38.0",
     "vue-eslint-parser": "^10.2.0"
   },
   "optionalDependencies": {
