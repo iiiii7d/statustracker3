@@ -1,8 +1,8 @@
-FROM node:24-alpine AS build
+FROM node:24-slim AS build
 
 RUN corepack enable
 
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD true
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm i -P
 
@@ -20,5 +20,5 @@ RUN apt-get update && apt-get install gnupg wget -y && \
 
 COPY --from=build .output/ ./
 EXPOSE 3000
-ENV DOCKER true
+ENV DOCKER=true
 CMD ["node", "./server/index.mjs"]

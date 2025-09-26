@@ -14,7 +14,6 @@
     "gen-licenses": "pnpm licenses ls --long -P > public/licenses.txt"
   },
   "dependencies": {
-    "@nuxt/eslint": "1.9.0",
     "chart.js": "^4.5.0",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-annotation": "^3.1.0",
@@ -22,7 +21,7 @@
     "kysely": "^0.28.7",
     "nuxt": "^4.1.2",
     "pg": "^8.16.3",
-    "vue": "^3.5.21",
+    "vue": "^3.5.22",
     "vue-chartjs": "^5.3.2",
     "vue-router": "^4.5.1",
     "winston": "^3.17.0",
@@ -30,6 +29,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
+    "@nuxt/eslint": "^1.9.0",
     "@types/pg": "^8.15.5",
     "eslint": "^9.36.0",
     "eslint-config-flat-gitignore": "^2.1.0",
