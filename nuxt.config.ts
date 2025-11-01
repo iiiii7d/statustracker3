@@ -33,5 +33,5 @@ export default defineNuxtConfig({
   },
 
   components: ["~/sections", "~/components"],
-  modules: ["@nuxt/eslint"],
+  modules: import.meta.dev ? ["@nuxt/eslint"] : [],
 });

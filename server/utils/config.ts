@@ -54,7 +54,9 @@ export function getConfig(): Config {
     return configSchema.parse(JSON.parse(process.env.CONFIG));
   }
 
-  const configPath = process.env.CONFIG_PATH ?? "config.json";
+  const configPath =
+    process.env.CONFIG_PATH ??
+    (process.env.DOCKER ? "../config.json" : "config.json");
   if (fs.existsSync(configPath)) {
     logger.info(`Using config found in \`${configPath}\``);
     return configSchema.parse(
