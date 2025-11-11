@@ -1,0 +1,17 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    ":pinAllExceptPeerDependencies",
+    "helpers:pinGitHubActionDigestsToSemver",
+    ":disableDependencyDashboard",
+    "mergeConfidence:all-badges"
+  ],
+  "baseBranchPatterns": ["dev"],
+  "packageRules": [
+    {
+      "matchCategories": ["ci"],
+      "baseBranchPatterns": ["master"],
+    }
+  ]
+}
