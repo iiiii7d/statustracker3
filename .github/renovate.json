@@ -12,7 +12,7 @@
     {
       "matchBaseBranches": ["$default"],
       "enabled": false
-    }
+    },
     {
       "matchCategories": ["ci"],
       "matchBaseBranches": ["$default"],
