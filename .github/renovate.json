@@ -19,7 +19,7 @@
     },
     {
       "matchCategories": ["ci"],
-      "matchBaseBranches": ["master"],
+      "matchBaseBranches": ["$default"],
       "enabled": true
     }
   ]
