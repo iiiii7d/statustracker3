@@ -10,9 +10,13 @@
   "baseBranchPatterns": ["dev", "$default"],
   "packageRules": [
     {
-      "matchCategories": ["ci"],
       "matchBaseBranches": ["$default"],
       "enabled": false
+    }
+    {
+      "matchCategories": ["ci"],
+      "matchBaseBranches": ["$default"],
+      "enabled": true
     }
   ]
 }
