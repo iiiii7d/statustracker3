@@ -14,7 +14,7 @@
   "baseBranchPatterns": ["dev", "$default"],
   "packageRules": [
     {
-      "matchBaseBranches": ["master"],
+      "matchBaseBranches": ["$default"],
       "enabled": false
     },
     {
