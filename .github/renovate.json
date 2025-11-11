@@ -7,11 +7,12 @@
     ":disableDependencyDashboard",
     "mergeConfidence:all-badges"
   ],
-  "baseBranchPatterns": ["dev"],
+  "baseBranchPatterns": ["dev" "$default"],
   "packageRules": [
     {
-      "matchCategories": ["ci"],
-      "baseBranchPatterns": ["$default", "dev"]
+      "matchCategories": ["!/^ci$/"],
+      "matchBranchPatterns": ["$default"],
+      enabled: false
     }
   ]
 }
