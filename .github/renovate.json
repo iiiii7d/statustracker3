@@ -12,7 +12,7 @@
     {
       "matchCategories": ["!/^ci$/"],
       "matchBranchPatterns": ["$default"],
-      enabled: false
+      "enabled": false
     }
   ]
 }
