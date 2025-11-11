@@ -1,0 +1,26 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "docker:pinDigests",
+    ":configMigration",
+    "abandonments:recommended",
+    "security:minimumReleaseAgeNpm",
+    "helpers:pinGitHubActionDigestsToSemver",
+    ":disableDependencyDashboard",
+    "mergeConfidence:all-badges",
+    ":prHourlyLimitNone"
+  ],
+  "baseBranchPatterns": ["dev", "$default"],
+  "packageRules": [
+    {
+      "matchBaseBranches": ["master", "main"],
+      "enabled": false
+    },
+    {
+      "matchCategories": ["ci"],
+      "matchBaseBranches": ["master", "main"],
+      "enabled": true
+    }
+  ]
+}
