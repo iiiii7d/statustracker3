@@ -2,7 +2,7 @@
 
 import globals from "globals";
 import pluginJs from "@eslint/js";
-import pluginVue from "eslint-plugin-vue";
+// import pluginVue from "eslint-plugin-vue";
 import prettierConfig from "eslint-config-prettier";
 import tseslint from "typescript-eslint";
 import vueParser from "vue-eslint-parser";
@@ -12,11 +12,10 @@ import withNuxt from "./.nuxt/eslint.config.mjs";
 export default withNuxt(
   gitignore(),
   pluginJs.configs.all,
-  // @ts-expect-error
   ...tseslint.configs.strict,
   ...tseslint.configs.stylistic,
-  ...pluginVue.configs["flat/essential"],
-  ...pluginVue.configs["flat/recommended"],
+  // ...pluginVue.configs["flat/essential"],
+  // ...pluginVue.configs["flat/recommended"],
   {
     languageOptions: {
       sourceType: "module",

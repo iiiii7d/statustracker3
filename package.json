@@ -9,7 +9,9 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "lint": "eslint --fix .",
+    "typecheck": "nuxt typecheck",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "format": "prettier --write .",
     "gen-licenses": "pnpm licenses ls --long -P > public/licenses.txt"
   },
@@ -30,11 +32,11 @@
   "devDependencies": {
     "@eslint/js": "9.39.1",
     "@nuxt/eslint": "1.10.0",
+    "@tsconfig/strictest": "^2.0.8",
     "@types/pg": "8.15.6",
     "eslint": "9.39.1",
     "eslint-config-flat-gitignore": "2.1.0",
     "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-vue": "10.5.1",
     "globals": "16.5.0",
     "prettier": "3.6.2",
     "typescript-eslint": "8.46.4",
