@@ -10,7 +10,7 @@
   "baseBranchPatterns": ["dev", "$default"],
   "packageRules": [
     {
-      "matchBaseBranches": ["master", "main],
+      "matchBaseBranches": ["master", "main"],
       "enabled": false
     },
     {
