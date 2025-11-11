@@ -11,7 +11,7 @@
   "packageRules": [
     {
       "matchCategories": ["ci"],
-      "baseBranchPatterns": ["master"],
+      "baseBranchPatterns": ["master"]
     }
   ]
 }
