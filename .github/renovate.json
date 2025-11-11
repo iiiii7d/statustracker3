@@ -5,17 +5,18 @@
     ":pinAllExceptPeerDependencies",
     "helpers:pinGitHubActionDigestsToSemver",
     ":disableDependencyDashboard",
-    "mergeConfidence:all-badges"
+    "mergeConfidence:all-badges",
+    ":prHourlyLimitNone"
   ],
   "baseBranchPatterns": ["dev", "$default"],
   "packageRules": [
     {
-      "matchBaseBranches": ["master", "main"],
+      "matchBaseBranches": ["master"],
       "enabled": false
     },
     {
       "matchCategories": ["ci"],
-      "matchBaseBranches": ["master", "main"],
+      "matchBaseBranches": ["master"],
       "enabled": true
     }
   ]
