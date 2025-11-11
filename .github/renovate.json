@@ -5,7 +5,7 @@
     "docker:pinDigests",
     ":configMigration",
     "abandonments:recommended",
-    "security:minimumReleaseAgeNpm"
+    "security:minimumReleaseAgeNpm",
     "helpers:pinGitHubActionDigestsToSemver",
     ":disableDependencyDashboard",
     "mergeConfidence:all-badges",
