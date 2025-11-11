@@ -14,12 +14,12 @@
   "baseBranchPatterns": ["dev", "$default"],
   "packageRules": [
     {
-      "matchBaseBranches": ["$default"],
+      "matchBaseBranches": ["master", "main"],
       "enabled": false
     },
     {
       "matchCategories": ["ci"],
-      "matchBaseBranches": ["$default"],
+      "matchBaseBranches": ["master", "main"],
       "enabled": true
     }
   ]
