@@ -1,4 +1,4 @@
-FROM node:24.11.0-slim@sha256:76d0ed0ed93bed4f4376211e9d8fddac4d8b3fbdb54cc45955696001a3c91152 AS build
+FROM node:24.11.1-slim@sha256:f752e4821362614eab35016f01dea3af61d2f59d0445381c25683e4331520a7b AS build
 RUN corepack enable
 WORKDIR /app
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
@@ -14,7 +14,7 @@ RUN pnpm i -P
 COPY . .
 RUN pnpm run gen-licenses && pnpm run build
 
-FROM node:24.11.0-slim@sha256:76d0ed0ed93bed4f4376211e9d8fddac4d8b3fbdb54cc45955696001a3c91152
+FROM node:24.11.1-slim@sha256:f752e4821362614eab35016f01dea3af61d2f59d0445381c25683e4331520a7b
 WORKDIR /app
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
