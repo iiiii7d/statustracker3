@@ -1,4 +1,4 @@
-import { Generated, Kysely, PostgresDialect, sql } from "kysely";
+import { type Generated, Kysely, PostgresDialect, sql } from "kysely";
 import { types as pgTypes } from "pg";
 import * as df from "date-fns";
 

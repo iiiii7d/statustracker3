@@ -125,7 +125,7 @@ function generateLine(
     label: `${name}${ma === 0 ? "" : ` (Rolling average ${movingAverages[ma]})`}`,
     data: y,
     borderColor:
-      colour + (colour.length === 4 ? ALPHA[i] : ALPHA[i] + ALPHA[i]),
+      colour + (colour.length === 4 ? ALPHA[i]! : ALPHA[i]! + ALPHA[i]!),
     pointRadius: 0,
     pointHitRadius: 5,
     spanGaps: ma !== 0,
