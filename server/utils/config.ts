@@ -6,6 +6,7 @@ import * as fs from "node:fs";
 import logger from "./logger";
 import { type LaunchOptions } from "puppeteer";
 
+const uuidSchema = z.string().regex(/^[0-9a-fA-F]{32}$/u);
 const webhookConfigSchema = z.object({
   client: z.custom<WebhookClientData>().transform((a) => new WebhookClient(a)),
   serverUrl: z.string(),
@@ -27,14 +28,21 @@ const webhookConfigSchema = z.object({
 });
 const configSchema = z.object({
   dynmapLink: z.url(),
+  token: z.string().optional(),
   db: z.custom<PoolConfig>().transform((a) => new Pool(a)),
   categories: z
     .record(
       z.string(),
       z.object({
         uuids: z
-          .string()
-          .regex(/^[0-9a-fA-F]{32}$/u)
+          .union([
+            uuidSchema,
+            z.tuple([
+              uuidSchema,
+              z.iso.datetime({ local: false, offset: true }).nullish(),
+              z.iso.datetime({ local: false, offset: true }).nullish(),
+            ]),
+          ])
           .array(),
         colour: z.string().regex(/^#(?:[0-9a-f]{3}){1,2}$/u),
       }),

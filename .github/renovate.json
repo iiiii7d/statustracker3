@@ -3,7 +3,11 @@
   "extends": ["github>iiiii7d/renovate-config", "config:js-app"],
   "packageRules": [
     {
-      "matchPackageNames": ["chartjs-adapter-date-fns", "chartjs-plugin-annotation", "date-fns"],
+      "matchPackageNames": [
+        "chartjs-adapter-date-fns",
+        "chartjs-plugin-annotation",
+        "date-fns"
+      ],
       "abandonmentThreshold": null
     }
   ]
