@@ -20,7 +20,7 @@
     "chartjs-adapter-date-fns": "3.0.0",
     "chartjs-plugin-annotation": "3.1.0",
     "date-fns": "4.1.0",
-    "kysely": "0.28.8",
+    "kysely": "0.28.9",
     "nuxt": "4.2.2",
     "pg": "8.16.3",
     "vue": "3.5.25",
