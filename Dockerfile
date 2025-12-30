@@ -1,4 +1,4 @@
-FROM node:slim@sha256:7363aaa1daa5b06a01711960c10c58f1bc1c5eebf94fd52df62ed220e6771624 AS build
+FROM node:slim@sha256:b20f82c2332a22609edb43cdfd6b16cbb199a6e6fd5cf8d5ef85b43faab43144 AS build
 WORKDIR /app
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
@@ -16,7 +16,7 @@ RUN pnpm fetch -P
 COPY . .
 RUN pnpm run gen-licenses && pnpm run build
 
-FROM node:slim@sha256:7363aaa1daa5b06a01711960c10c58f1bc1c5eebf94fd52df62ed220e6771624
+FROM node:slim@sha256:b20f82c2332a22609edb43cdfd6b16cbb199a6e6fd5cf8d5ef85b43faab43144
 WORKDIR /app
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
