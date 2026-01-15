@@ -2280,8 +2280,8 @@ packages:
   devtools-protocol@0.0.1521046:
     resolution: {integrity: sha512-vhE6eymDQSKWUXwwA37NtTTVEzjtGVfDr3pRbsWEQ5onH/Snp2c+2xZHWJJawG/0hCCJLRGt4xVtEVUVILol4w==}
 
-  diff@8.0.2:
-    resolution: {integrity: sha512-sSuxWU5j5SR9QQji/o2qMvqRNYRDOcBTgsJ/DeCf4iSN4gW+gNMXM7wFIP+fdXZxoNiAnHUTGjCr+TSWXdRDKg==}
+  diff@8.0.3:
+    resolution: {integrity: sha512-qejHi7bcSD4hQAZE0tNAawRK1ZtafHDmMTMkrrIGgSLl7hTnQHmKCeB45xAcbfTqK2zowkM3j3bHt/4b/ARbYQ==}
     engines: {node: '>=0.3.1'}
 
   discord-api-types@0.38.34:
@@ -5245,7 +5245,7 @@ snapshots:
   '@nuxt/devtools-wizard@3.1.1':
     dependencies:
       consola: 3.4.2
-      diff: 8.0.2
+      diff: 8.0.3
       execa: 8.0.1
       magicast: 0.5.1
       pathe: 2.0.3
@@ -6868,7 +6868,7 @@ snapshots:
   devtools-protocol@0.0.1521046:
     optional: true
 
-  diff@8.0.2: {}
+  diff@8.0.3: {}
 
   discord-api-types@0.38.34:
     optional: true
