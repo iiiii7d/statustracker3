@@ -1,9 +1,16 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["github>iiiii7d/renovate-config", ":pinAllExceptPeerDependencies"],
+  "extends": [
+    "github>iiiii7d/renovate-config",
+    ":pinAllExceptPeerDependencies"
+  ],
   "packageRules": [
     {
-      "matchPackageNames": ["chartjs-adapter-date-fns", "chartjs-plugin-annotation", "date-fns"],
+      "matchPackageNames": [
+        "chartjs-adapter-date-fns",
+        "chartjs-plugin-annotation",
+        "date-fns"
+      ],
       "abandonmentThreshold": null
     }
   ]
