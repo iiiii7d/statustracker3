@@ -7397,8 +7397,6 @@ snapshots:
 
   globals@17.1.0: {}
 
-  globals@17.1.0: {}
-
   globby@16.1.0:
     dependencies:
       '@sindresorhus/merge-streams': 4.0.0
