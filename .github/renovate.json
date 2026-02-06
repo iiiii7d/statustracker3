@@ -4,6 +4,17 @@
     "github>iiiii7d/renovate-config",
     ":pinAllExceptPeerDependencies"
   ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/^Dockerfile$/"],
+      "matchStrings": [
+        "#\\s*renovate:\\s*?deb\\s*depName=(?<depName>.*?)?\\sENV .*?_VERSION=\"(?<currentValue>.*)\""
+      ],
+      "registryUrlTemplate": "https://deb.debian.org/debian?suite=stable&components=main,contrib,non-free&binaryArch=amd64",
+      "datasourceTemplate": "deb"
+    }
+  ],
   "packageRules": [
     {
       "matchPackageNames": [
