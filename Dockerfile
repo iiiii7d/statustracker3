@@ -1,4 +1,4 @@
-FROM node:trixie-slim@sha256:5249f8aedf9432a08f0cfcca3d07a04ece95e6a8f4710590e1a8226b028c1233 AS build
+FROM node:trixie-slim@sha256:f3442599b9c4ee3ed64146b743b4b78c29d9e39d437ec6ca6f17a52fcd11d98e AS build
 WORKDIR /app
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 # renovate: deb depName=jq
@@ -20,7 +20,7 @@ RUN pnpm fetch -P
 COPY . .
 RUN pnpm run gen-licenses && pnpm run build
 
-FROM node:trixie-slim@sha256:5249f8aedf9432a08f0cfcca3d07a04ece95e6a8f4710590e1a8226b028c1233
+FROM node:trixie-slim@sha256:f3442599b9c4ee3ed64146b743b4b78c29d9e39d437ec6ca6f17a52fcd11d98e
 WORKDIR /app
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 # renovate: deb depName=gnupg
