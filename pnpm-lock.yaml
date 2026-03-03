@@ -60,8 +60,8 @@ importers:
         specifier: 2.0.8
         version: 2.0.8
       '@types/pg':
-        specifier: 8.16.0
-        version: 8.16.0
+        specifier: 8.18.0
+        version: 8.18.0
       eslint:
         specifier: 10.0.2
         version: 10.0.2(jiti@2.6.1)
@@ -1451,8 +1451,8 @@ packages:
   '@types/node@25.3.3':
     resolution: {integrity: sha512-DpzbrH7wIcBaJibpKo9nnSQL0MTRdnWttGyE5haGwK86xgMOkFLp7vEyfQPGLOJh5wNYiJ3V9PmUMDhV9u8kkQ==}
 
-  '@types/pg@8.16.0':
-    resolution: {integrity: sha512-RmhMd/wD+CF8Dfo+cVIy3RR5cl8CyfXQ0tGgW6XBL8L4LM/UTEbNXYRbLwU6w+CgrKBNbrQWt4FUtTfaU5jSYQ==}
+  '@types/pg@8.18.0':
+    resolution: {integrity: sha512-gT+oueVQkqnj6ajGJXblFR4iavIXWsGAFCk3dP4Kki5+a9R4NMt0JARdk6s8cUKcfUoqP5dAtDSLU8xYUTFV+Q==}
 
   '@types/resolve@1.20.2':
     resolution: {integrity: sha512-60BCwRFOZCQhDncwQdxxeOEEkbc5dIMccYLwbxsS4TUNeVECQ/pBJ0j09mrHOl/JJvpRPGwO9SvE4nR2Nb/a4Q==}
@@ -5837,7 +5837,7 @@ snapshots:
     dependencies:
       undici-types: 7.18.2
 
-  '@types/pg@8.16.0':
+  '@types/pg@8.18.0':
     dependencies:
       '@types/node': 25.3.3
       pg-protocol: 1.12.0
