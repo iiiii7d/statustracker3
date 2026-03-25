@@ -1,7 +1,7 @@
 FROM node:trixie-slim@sha256:6bee70a96af683b73090e4a2725d97b0ce3e896a3102654e3f164f0b87ef9397 AS build
 WORKDIR /app
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
-# renovate: deb depName=jq
+# renovate: datasource=deb depName=jq
 ENV JQ_VERSION="1.7.1-6+deb13u1"
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
@@ -23,11 +23,11 @@ RUN pnpm run gen-licenses && pnpm run build
 FROM node:trixie-slim@sha256:6bee70a96af683b73090e4a2725d97b0ce3e896a3102654e3f164f0b87ef9397
 WORKDIR /app
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
-# renovate: deb depName=gnupg
+# renovate: datasource=deb depName=gnupg
 ENV GNUPG_VERSION="2.4.7-21+deb13u1"
-# renovate: deb depName=wget
+# renovate: datasource=deb depName=wget
 ENV WGET_VERSION="1.25.0-2"
-# renovate: deb depName=ca-certificates
+# renovate: datasource=deb depName=ca-certificates
 ENV CA_CERTIFICATES_VERSION="20250419"
 
 RUN apt-get update && apt-get install -y --no-install-recommends gnupg="${GNUPG_VERSION}" wget="${WGET_VERSION}" ca-certificates="${CA_CERTIFICATES_VERSION}" && \
