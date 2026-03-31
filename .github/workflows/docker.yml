@@ -106,7 +106,7 @@ jobs:
           cache-to: type=gha,mode=max
           provenance: true
           sbom: true
-          outputs: type=tar,dest=statustracker-${{ github.ref_name }}.tar
+          outputs: type=oci,compression=zstd,compression-level=22,force-compression=true,dest=statustracker-${{ github.ref_name }}.tar.zst
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
@@ -126,13 +126,13 @@ jobs:
       - uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
         if: github.ref_type == 'tag'
         with:
-          subject-path: statustracker-${{ github.ref_name }}.tar
+          subject-path: statustracker-${{ github.ref_name }}.tar.zst
 
       - uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
         if: github.ref_type == 'tag'
         with:
           body: ${{ needs.changelog.outputs.changelog }}
-          files: statustracker-${{ github.ref_name }}.tar
+          files: statustracker-${{ github.ref_name }}.tar.zst
 
   delete-github-release:
     runs-on: ubuntu-latest

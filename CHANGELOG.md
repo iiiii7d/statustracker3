@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.1.22 (20260331)
+
+upload oci image instead of raw tar to GitHub releases
+
 ## v3.1.21 (20260331)
 
 - upgrade dependencies
