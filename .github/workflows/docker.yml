@@ -122,7 +122,7 @@ jobs:
         # against the sigstore community Fulcio instance.
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
 
-      - uses: actions/attest@v4
+      - uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
         if: ${{ github.ref_type == 'tag' }}
         with:
           subject-path: statustracker-${{ github.ref_name }}.tar
