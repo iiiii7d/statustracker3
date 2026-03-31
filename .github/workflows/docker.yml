@@ -35,7 +35,7 @@ jobs:
             python -c "
           import os
           version = os.environ["TAG"]
-          print('\n'.join(open('../../CHANGELOG.md').read().split('## v'+version)[1].split('\n')[1:]).split('\n##')[0])
+          print('\n'.join(open('../../CHANGELOG.md').read().split('## '+version)[1].split('\n')[1:]).split('\n##')[0])
             "
             echo __EOF__
             } >> "$GITHUB_OUTPUT"
@@ -49,11 +49,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: write
       # This is used to complete the identity challenge
       # with sigstore/fulcio when running outside of PRs.
       id-token: write
+      attestations: write
     needs: changelog
 
     steps:
@@ -63,7 +64,7 @@ jobs:
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
       - name: Install cosign
-        if: github.ref_name == 'master'
+        if: github.ref_type == 'tag' || github.ref_name == 'master'
         uses: sigstore/cosign-installer@cad07c2e89fa2edd6e2d7bab4c1aa38e53f76003 # v4.1.1
 
       # Set up BuildKit Docker container builder to be able to build
@@ -75,7 +76,7 @@ jobs:
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
-        if: github.ref_name == 'master'
+        if: github.ref_type == 'tag' || github.ref_name == 'master'
         uses: docker/login-action@b45d80f862d83dbcd57f89517bcf500b2ab88fb2 # v4.0.0
         with:
           registry: ${{ env.REGISTRY }}
@@ -97,7 +98,7 @@ jobs:
         uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
         with:
           context: .
-          push: ${{ github.ref_name == 'master' }}
+          push: ${{ github.ref_type == 'tag' || github.ref_name == 'master' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           annotations: ${{ steps.meta.outputs.annotations }}
@@ -105,7 +106,7 @@ jobs:
           cache-to: type=gha,mode=max
           provenance: true
           sbom: true
-          outputs: type=local,dest=statustracker-${{ github.ref_name }}.tar
+          outputs: type=tar,dest=statustracker-${{ github.ref_name }}.tar
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
@@ -113,7 +114,7 @@ jobs:
       # transparency data even for private images, pass --force to cosign below.
       # https://github.com/sigstore/cosign
       - name: Sign the published Docker image
-        if: ${{ github.ref_name == 'master' }}
+        if: github.ref_type == 'tag' || github.ref_name == 'master'
         env:
           # https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions#using-an-intermediate-environment-variable
           TAGS: ${{ steps.meta.outputs.tags }}
@@ -123,12 +124,26 @@ jobs:
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
 
       - uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
-        if: ${{ github.ref_type == 'tag' }}
+        if: github.ref_type == 'tag'
         with:
           subject-path: statustracker-${{ github.ref_name }}.tar
 
       - uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
-        if: ${{ github.ref_type == 'tag' }}
+        if: github.ref_type == 'tag'
         with:
           body: ${{ needs.changelog.outputs.changelog }}
           files: statustracker-${{ github.ref_name }}.tar
+
+  delete-github-release:
+    runs-on: ubuntu-latest
+    needs: [changelog, build]
+    if: always() && github.ref_type == 'tag' && contains(needs.*.result, 'failure')
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - run: gh release delete $TAG --cleanup-tag -y
+        env:
+          TAG: ${{ github.ref_name }}
+          GH_TOKEN: ${{ github.token }}
