@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
   push:
     branches: ["master", "renovate/**"]
-    tags: ["*"]
+    tags: ["**"]
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -18,6 +18,34 @@ env:
   IMAGE_NAME: ${{ github.repository }}
 
 jobs:
+  changelog:
+    runs-on: ubuntu-latest
+    outputs:
+      changelog: ${{ steps.changelog.outputs.changelog }}
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - id: changelog
+        run: |
+          if [ -z "$HAS_TAG" ]; then
+            {
+            echo 'changelog<<__EOF__'
+            python -c "
+          import os
+          version = os.environ["TAG"]
+          print('\n'.join(open('../../CHANGELOG.md').read().split('## v'+version)[1].split('\n')[1:]).split('\n##')[0])
+            "
+            echo __EOF__
+            } >> "$GITHUB_OUTPUT"
+          else
+            echo "changelog=''" > "$GITHUB_OUTPUT"
+          fi
+        env:
+          HAS_TAG: ${{ github.ref_type == 'tag' }}
+          TAG: ${{ github.ref_name }}
+
   build:
     runs-on: ubuntu-latest
     permissions:
@@ -26,6 +54,7 @@ jobs:
       # This is used to complete the identity challenge
       # with sigstore/fulcio when running outside of PRs.
       id-token: write
+    needs: changelog
 
     steps:
       - name: Checkout repository
@@ -71,8 +100,12 @@ jobs:
           push: ${{ github.ref_name == 'master' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          annotations: ${{ steps.meta.outputs.annotations }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          provenance: true
+          sbom: true
+          outputs: type=local,dest=statustracker-${{ github.ref_name }}.tar
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
@@ -88,3 +121,14 @@ jobs:
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
         run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+
+      - uses: actions/attest@v4
+        if: ${{ github.ref_type == 'tag' }}
+        with:
+          subject-path: statustracker-${{ github.ref_name }}.tar
+
+      - uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2.6.1
+        if: ${{ github.ref_type == 'tag' }}
+        with:
+          body: ${{ needs.changelog.outputs.changelog }}
+          files: statustracker-${{ github.ref_name }}.tar
