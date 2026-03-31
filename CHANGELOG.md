@@ -1,5 +1,10 @@
 # Changelog
 
+## v3.1.21 (20260331)
+
+- upgrade dependencies
+- rework ci
+
 ## v3.1.20 (20260321)
 
 upgrade dependencies
