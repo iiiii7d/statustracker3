@@ -34,7 +34,7 @@ jobs:
             echo 'changelog<<__EOF__'
             python -c "
           import os
-          version = os.environ["TAG"]
+          version = os.environ['TAG']
           print('\n'.join(open('../../CHANGELOG.md').read().split('## '+version)[1].split('\n')[1:]).split('\n##')[0])
             "
             echo __EOF__
