@@ -3,3 +3,4 @@ onlyBuiltDependencies:
   - esbuild
   - puppeteer
   - unrs-resolver
+minimumReleaseAge: 4320
