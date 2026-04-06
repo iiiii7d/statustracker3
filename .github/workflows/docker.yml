@@ -27,6 +27,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - id: changelog
         run: |
           if [ -z "$HAS_TAG" ]; then
@@ -60,6 +62,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
@@ -143,6 +147,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
       - run: gh release delete $TAG --cleanup-tag -y
         env:
           TAG: ${{ github.ref_name }}
