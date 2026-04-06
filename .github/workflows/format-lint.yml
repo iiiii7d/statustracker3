@@ -41,6 +41,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      security-events: write
+      actions: read
     needs: format
 
     steps:
@@ -59,6 +61,8 @@ jobs:
             ~/.local/share/pnpm
             **/node_modules
           key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+
+      - uses: zizmorcore/zizmor-action@71321a20a9ded102f6e9ce5718a2fcec2c4f70d8 # v0.5.2
 
       - run: pnpm i
       - run: pnpm run lint:fix
