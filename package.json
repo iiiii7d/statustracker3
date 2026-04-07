@@ -12,6 +12,7 @@
     "type-check": "nuxt typecheck",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
+    "lint:sarif": "eslint -f @microsoft/eslint-formatter-sarif --fix .",
     "format": "prettier --write .",
     "gen-licenses": "pnpm licenses ls --long -P > public/licenses.txt"
   },
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@microsoft/eslint-formatter-sarif": "3.1.0",
     "@nuxt/eslint": "1.15.2",
     "@tsconfig/strictest": "2.0.8",
     "@types/pg": "8.20.0",
