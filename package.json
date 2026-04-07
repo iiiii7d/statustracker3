@@ -34,7 +34,7 @@
     "@nuxt/eslint": "1.15.2",
     "@tsconfig/strictest": "2.0.8",
     "@types/pg": "8.20.0",
-    "eslint": "10.1.0",
+    "eslint": "10.2.0",
     "eslint-config-flat-gitignore": "2.3.0",
     "eslint-config-prettier": "10.1.8",
     "globals": "17.4.0",
