@@ -63,11 +63,30 @@ jobs:
           key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - uses: zizmorcore/zizmor-action@71321a20a9ded102f6e9ce5718a2fcec2c4f70d8 # v0.5.2
+        with:
+          version: 1.23.1
 
       - run: pnpm i
-      - run: pnpm run lint:fix
+      - run: pnpm run lint:sarif | tail -n +4 | tee ${{ runner.temp }}/eslint.sarif
       - run: pnpm run type-check
         if: "!cancelled()"
+
+      - uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: Dockerfile
+          format: sarif
+          output-file: "${{ runner.temp }}/hadolint.sarif"
+
+      - uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4.35.1
+        if: "!cancelled()"
+        with:
+          sarif_file: ${{ runner.temp }}/hadolint.sarif
+          category: hadolint
+      - uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4.35.1
+        if: "!cancelled()"
+        with:
+          sarif_file: ${{ runner.temp }}/eslint.sarif
+          category: eslint
 
       - run: echo "message=lint @ $(date +%Y%m%dT%H:%M:%S%Z)" >> "$GITHUB_ENV"
         if: github.ref_name == 'dev' && !cancelled()
