@@ -1,5 +1,12 @@
 import pkg from "./package.json";
 
+let nuxtEslintExists = true;
+try {
+  await import("@nuxt/eslint");
+} catch {
+  nuxtEslintExists = false;
+}
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2025-05-15",
@@ -33,5 +40,5 @@ export default defineNuxtConfig({
   },
 
   components: ["~/sections", "~/components"],
-  modules: (await import("@nuxt/eslint")) ? ["@nuxt/eslint"] : [],
+  modules: nuxtEslintExists ? ["@nuxt/eslint"] : [],
 });
