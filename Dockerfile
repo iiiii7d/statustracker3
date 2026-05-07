@@ -5,17 +5,17 @@ SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 ENV JQ_VERSION="1.7.1-6+deb13u1"
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml nuxt.config.ts ./
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
    jq="${JQ_VERSION}" \
    && rm -r /var/lib/apt/lists/* && apt-get clean
 RUN npm i -g "$(cat package.json | jq -r '.packageManager')"
 
+RUN pnpm i -P
+
 # to make gen-licenses work
 RUN pnpm add "tslib@$(cat pnpm-lock.yaml | grep tslib -m 1 | sed -E 's/.*tslib@(.*?):/\1/g')"
-
-RUN pnpm fetch -P
 
 COPY . .
 RUN pnpm run gen-licenses && pnpm run build
