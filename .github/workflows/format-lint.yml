@@ -67,7 +67,7 @@ jobs:
           version: 1.24.1
 
       - run: pnpm i
-      - run: pnpm run lint:sarif | tail -n +4 | tee ${{ runner.temp }}/eslint.sarif
+      - run: pnpm run lint:sarif | tail -n +3 | tee ${{ runner.temp }}/eslint.sarif
       - run: pnpm run type-check
         if: "!cancelled()"
 
