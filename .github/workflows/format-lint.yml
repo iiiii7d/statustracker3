@@ -25,6 +25,7 @@ jobs:
           path: |
             ~/.local/share/pnpm
             **/node_modules
+            .nuxt
           key: pnpm-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
 
       - run: pnpm i
