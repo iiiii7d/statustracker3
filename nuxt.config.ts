@@ -9,8 +9,8 @@ try {
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: "2025-05-15",
-  future: { compatibilityVersion: 4 },
+  compatibilityDate: "2026-05-01",
+  future: { compatibilityVersion: 5 },
   devtools: { enabled: true },
 
   app: {
