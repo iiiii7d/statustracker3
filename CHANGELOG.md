@@ -1,5 +1,10 @@
 # Changelog
 
+## v3.1.25 (20260510)
+
+upgrade dependencies
+* upgrade pnpm v11
+
 ## v3.1.24 (20260414)
 
 upgrade dependencies
