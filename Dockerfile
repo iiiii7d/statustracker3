@@ -1,4 +1,4 @@
-FROM node:trixie-slim@sha256:f879737cd65b6dbf82bc34572bcc88b3580cebd2ba067619febfb0ed5acddd0b AS build
+FROM node:trixie-slim@sha256:424cafd2a035ed2b2d74acc3142b68b426fb62a47742c80a75e7117db02d6b30 AS build
 WORKDIR /app
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 # renovate: datasource=deb depName=jq
@@ -20,7 +20,7 @@ RUN pnpm add "tslib@$(cat pnpm-lock.yaml | grep tslib -m 1 | sed -E 's/.*tslib@(
 COPY . .
 RUN pnpm run gen-licenses && pnpm run build
 
-FROM node:trixie-slim@sha256:f879737cd65b6dbf82bc34572bcc88b3580cebd2ba067619febfb0ed5acddd0b
+FROM node:trixie-slim@sha256:424cafd2a035ed2b2d74acc3142b68b426fb62a47742c80a75e7117db02d6b30
 WORKDIR /app
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 # renovate: datasource=deb depName=gnupg
