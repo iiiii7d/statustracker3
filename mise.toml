@@ -1,7 +1,7 @@
 [tools]
 hk = "1.45.0"
 pkl = "0.31.1"
-node = "25.8.1"
+node = "25.9.0"
 pnpm = "11.0.6"
 hadolint = "2.14.0"
 zizmor = "1.24.1"
