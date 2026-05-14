@@ -125,14 +125,14 @@ jobs:
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         # This step uses the identity token to provision an ephemeral certificate
         # against the sigstore community Fulcio instance.
-        run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+        run: echo "${TAGS}" | xargs -I {} cosign sign --yes "{}@${DIGEST}"
 
       - uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
         if: github.ref_type == 'tag'
         with:
           subject-path: statustracker-${{ github.ref_name }}.tar.zst
 
-      - uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0
+      - uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda # v3.0.0  # zizmor: ignore[superfluous-actions]
         if: github.ref_type == 'tag'
         with:
           body: ${{ needs.changelog.outputs.changelog }}
@@ -149,7 +149,7 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - run: gh release delete $TAG --cleanup-tag -y
+      - run: gh release delete "$TAG" --cleanup-tag -y
         env:
           TAG: ${{ github.ref_name }}
           GH_TOKEN: ${{ github.token }}

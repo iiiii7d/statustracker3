@@ -10,10 +10,11 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "type-check": "nuxt typecheck",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
-    "lint:sarif": "eslint -f @microsoft/eslint-formatter-sarif --fix .",
-    "format": "prettier --write .",
+    "lint": "eslint ${@:-.}",
+    "lint:fix": "eslint --fix ${@:-.}",
+    "lint:sarif": "eslint -f @microsoft/eslint-formatter-sarif --fix ${@:-.}",
+    "format": "prettier --write ${@:-.}",
+    "format:check": "prettier --check ${@:-.}",
     "gen-licenses": "pnpm licenses ls --long -P > public/licenses.txt"
   },
   "dependencies": {
@@ -41,7 +42,8 @@
     "globals": "17.6.0",
     "prettier": "3.8.3",
     "typescript-eslint": "8.59.2",
-    "vue-eslint-parser": "10.4.0"
+    "vue-eslint-parser": "10.4.0",
+    "vue-tsc": "^3.2.8"
   },
   "optionalDependencies": {
     "cron-parser": "5.5.0",
