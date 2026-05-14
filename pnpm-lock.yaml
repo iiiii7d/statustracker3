@@ -83,7 +83,7 @@ importers:
         specifier: 10.4.0
         version: 10.4.0(eslint@10.3.0(jiti@2.7.0))
       vue-tsc:
-        specifier: ^3.2.8
+        specifier: 3.2.8
         version: 3.2.8(typescript@6.0.3)
     optionalDependencies:
       cron-parser:
