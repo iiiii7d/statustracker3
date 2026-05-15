@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.1.26 (20260513)
+
+migrate to mise and hk
+
 ## v3.1.25 (20260510)
 
 upgrade dependencies
