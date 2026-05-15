@@ -33,23 +33,23 @@ local type_checkers = new Mapping<String, Step> {
 }
 local sarif = new Mapping<String, Step> {
     ["mkdir"] {
-        fix = "mkdir ${SARIF_DIR:-.sarif} || true"
+        fix = "mkdir .sarif || true"
         exclusive = true
     }
     ["eslint"] {
-        fix = "pnpm run lint:sarif > ${SARIF_DIR:-.sarif}/eslint.sarif"
+        fix = "pnpm run lint:sarif > .sarif/eslint.sarif"
     }
     ["zizmor"] {
-        fix = linters["zizmor"].fix.replaceAll("{{ files }}", ".") + " --format=sarif > ${SARIF_DIR:-.sarif}/zizmor.sarif"
+        fix = linters["zizmor"].fix.replaceAll("{{ files }}", ".") + " --format=sarif > .sarif/zizmor.sarif"
     }
     ["actionlint"] {
-        check = linters["actionlint"].check.replaceAll("{{ files }}", "") + " -format \"$(curl -sSL \"https://raw.githubusercontent.com/rhysd/actionlint/refs/heads/main/testdata/format/sarif_template.txt\")\" > ${SARIF_DIR:-.sarif}/actionlint.sarif"
+        check = linters["actionlint"].check.replaceAll("{{ files }}", "") + " -format \"$(curl -sSL \"https://raw.githubusercontent.com/rhysd/actionlint/refs/heads/main/testdata/format/sarif_template.txt\")\" > .sarif/actionlint.sarif"
     }
     ["poutine"] {
-        check = linters["poutine"].check as String + " --format=sarif > ${SARIF_DIR:-.sarif}/poutine.sarif"
+        check = linters["poutine"].check as String + " --format=sarif > .sarif/poutine.sarif"
     }
     ["hadolint"] {
-        check = linters["hadolint"].check.replaceAll("{{ files }}", "Dockerfile") + " --format=sarif > ${SARIF_DIR:-.sarif}/hadolint.sarif"
+        check = linters["hadolint"].check.replaceAll("{{ files }}", "Dockerfile") + " --format=sarif > .sarif/hadolint.sarif"
     }
     ...type_checkers
 }
