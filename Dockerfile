@@ -2,7 +2,7 @@ FROM node:trixie-slim@sha256:424cafd2a035ed2b2d74acc3142b68b426fb62a47742c80a75e
 WORKDIR /app
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 # renovate: datasource=deb depName=jq
-ENV JQ_VERSION="1.7.1-6+deb13u1"
+ENV JQ_VERSION="1.7.1-6+deb13u2"
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml nuxt.config.ts ./
