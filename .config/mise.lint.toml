@@ -1,8 +1,6 @@
 [tools]
 hk = "1.45.0"
 pkl = "0.31.1"
-node = "25.9.0"
-pnpm = "11.0.6"
 hadolint = "2.14.0"
 zizmor = "1.24.1"
 actionlint = "1.7.12"
@@ -10,6 +8,3 @@ actionlint = "1.7.12"
 
 [tasks]
 pre-commit = { run = "hk run pre-commit" }
-
-[settings]
-minimum_release_age = "3d"

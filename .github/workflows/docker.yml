@@ -139,7 +139,7 @@ jobs:
           files: statustracker-${{ github.ref_name }}.tar.zst
 
   delete-github-release:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-slim
     needs: [changelog, build]
     if: always() && github.ref_type == 'tag' && contains(needs.*.result, 'failure')
     permissions:
