@@ -26,7 +26,7 @@
     "nuxt": "4.4.5",
     "pg": "8.20.0",
     "vue-chartjs": "5.3.3",
-    "vue-router": "5.0.6",
+    "vue-router": "5.0.7",
     "winston": "3.19.0",
     "zod": "4.4.3"
   },
