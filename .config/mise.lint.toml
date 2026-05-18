@@ -2,7 +2,7 @@
 hk = "1.45.0"
 pkl = "0.31.1"
 hadolint = "2.14.0"
-zizmor = "1.24.1"
+zizmor = "1.25.0"
 actionlint = "1.7.12"
 "github:boostsecurityio/poutine" = "1.1.4"
 
