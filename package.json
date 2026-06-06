@@ -23,7 +23,7 @@
     "chartjs-plugin-annotation": "3.1.0",
     "date-fns": "4.4.0",
     "kysely": "0.29.2",
-    "nuxt": "4.4.6",
+    "nuxt": "4.4.7",
     "pg": "8.21.0",
     "vue-chartjs": "5.3.3",
     "vue-router": "5.1.0",
