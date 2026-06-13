@@ -1,6 +1,6 @@
 [tools]
 node = "25.9.0"
-pnpm = "11.5.2"
+pnpm = "11.5.3"
 
 [settings]
 minimum_release_age = "3d"
