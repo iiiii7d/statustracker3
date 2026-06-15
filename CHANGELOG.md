@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.1.29 (20260615)
+
+upgrade dependencies
+
 ## v3.1.28 (20260520)
 
 upgrade dependencies
