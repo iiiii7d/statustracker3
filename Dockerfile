@@ -14,9 +14,6 @@ RUN npm i -g "$(cat package.json | jq -r '.packageManager')"
 
 RUN pnpm i -P
 
-# to make gen-licenses work
-RUN pnpm add "tslib@$(cat pnpm-lock.yaml | grep tslib -m 1 | sed -E 's/.*tslib@(.*?):/\1/g')"
-
 COPY . .
 RUN pnpm run gen-licenses && pnpm run build
 
