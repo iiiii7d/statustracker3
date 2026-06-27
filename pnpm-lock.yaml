@@ -12,6 +12,9 @@ importers:
 
   .:
     dependencies:
+      '@tsconfig/strictest':
+        specifier: 2.0.8
+        version: 2.0.8
       chart.js:
         specifier: 4.5.1
         version: 4.5.1
@@ -58,9 +61,6 @@ importers:
       '@nuxt/eslint':
         specifier: 1.16.0
         version: 1.16.0(@typescript-eslint/utils@8.62.0(eslint@10.5.0(jiti@2.7.0))(typescript@6.0.3))(@vue/compiler-sfc@3.5.38)(crossws@0.4.6(srvx@0.11.17))(esbuild@0.28.1)(eslint@10.5.0(jiti@2.7.0))(magicast@0.5.3)(oxc-parser@0.133.0)(rollup@4.62.2)(typescript@6.0.3)(vite@7.3.5(@types/node@26.0.0)(jiti@2.7.0)(terser@5.48.0)(yaml@2.9.0))
-      '@tsconfig/strictest':
-        specifier: 2.0.8
-        version: 2.0.8
       '@types/pg':
         specifier: 8.20.0
         version: 8.20.0

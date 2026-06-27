@@ -34,7 +34,7 @@ RUN curl https://mise.run | sh
 COPY .config .config
 RUN mise trust && mise install --system
 
-
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm i -P
 
 COPY . .
