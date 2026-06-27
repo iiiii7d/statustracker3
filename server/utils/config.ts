@@ -1,10 +1,10 @@
 import { z } from "zod/v4";
 import { WebhookClient, type WebhookClientData } from "discord.js";
 import { Pool, type PoolConfig } from "pg";
-import { type Duration } from "date-fns";
+import type { Duration } from "date-fns";
 import * as fs from "node:fs";
 import logger from "./logger";
-import { type LaunchOptions } from "puppeteer";
+import type { LaunchOptions } from "puppeteer";
 
 const webhookConfigSchema = z.object({
   client: z.custom<WebhookClientData>().transform((a) => new WebhookClient(a)),

@@ -1,5 +1,5 @@
-import { Database, getDB } from "../db";
-import { sql, Transaction } from "kysely";
+import { type Database, getDB } from "../db";
+import { sql, type Transaction } from "kysely";
 
 async function currentPlayerList(): Promise<string[]> {
   logger.info(`Retrieving current player list from ${config.dynmapLink}`);
