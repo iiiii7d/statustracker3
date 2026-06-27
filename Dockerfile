@@ -1,23 +1,47 @@
-FROM node:trixie-slim@sha256:a1d9d671994fc2d26e297ac56b4b1522a8bc7fa71c43b14cd1b1fe6c5116f7dc AS build
+FROM debian:13.5-slim AS build
 WORKDIR /app
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
-# renovate: datasource=deb depName=jq
-ENV JQ_VERSION="1.7.1-6+deb13u2"
 
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml nuxt.config.ts ./
+# renovate: datasource=deb depName=sudo
+ENV SUDO_VERSION="1.9.16p2-3+deb13u2"
+# renovate: datasource=deb depName=curl
+ENV CURL_VERSION="8.14.1-2+deb13u3"
+# renovate: datasource=deb depName=git
+ENV GIT_VERSION="1:2.47.3-0+deb13u1"
+# renovate: datasource=deb depName=ca-certificates
+ENV CA_CERTIFICATES_VERSION="20250419"
+# renovate: datasource=deb depName=build-essential
+ENV BUILD_ESSENTIAL_VERSION="12.12"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-   jq="${JQ_VERSION}" \
-   && rm -r /var/lib/apt/lists/* && apt-get clean
-RUN npm i -g "$(cat package.json | jq -r '.packageManager')"
+    sudo="${SUDO_VERSION}" \
+    curl="${CURL_VERSION}" \
+    git="${GIT_VERSION}" \
+    ca-certificates="${CA_CERTIFICATES_VERSION}" \
+    build-essential="${BUILD_ESSENTIAL_VERSION}" \
+    && rm -r /var/lib/apt/lists/* && apt-get clean
+
+ENV MISE_DATA_DIR="/mise"
+ENV MISE_CONFIG_DIR="/mise"
+ENV MISE_CACHE_DIR="/mise/cache"
+ENV MISE_INSTALL_PATH="/usr/local/bin/mise"
+ENV PATH="/mise/shims:$PATH"
+# renovate: datasource=github-tags depName=jdx/mise
+ENV MISE_VERSION="v2026.6.13"
+ENV MISE_ENV=""
+RUN curl https://mise.run | sh
+
+COPY .config .config
+RUN mise trust && mise install --system
+
 
 RUN pnpm i -P
 
 COPY . .
 RUN pnpm run gen-licenses && pnpm run build
 
-FROM node:trixie-slim@sha256:a1d9d671994fc2d26e297ac56b4b1522a8bc7fa71c43b14cd1b1fe6c5116f7dc
+
+FROM node:26.4.0-slim
 WORKDIR /app
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 # renovate: datasource=deb depName=gnupg
