@@ -1,4 +1,4 @@
-FROM debian:13.5-slim AS build
+FROM debian:13.5-slim@sha256:28de0877c2189802884ccd20f15ee41c203573bd87bb6b883f5f46362d24c5c2 AS build
 WORKDIR /app
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
@@ -41,7 +41,7 @@ COPY . .
 RUN pnpm run gen-licenses && pnpm run build
 
 
-FROM node:26.4.0-slim
+FROM node:26.4.0-slim@sha256:a1d9d671994fc2d26e297ac56b4b1522a8bc7fa71c43b14cd1b1fe6c5116f7dc
 WORKDIR /app
 SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 # renovate: datasource=deb depName=gnupg
