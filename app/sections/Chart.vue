@@ -84,7 +84,7 @@ export async function updatePlayer() {
         ? null
         : (
             await useAsyncData(
-              `playe vr:${shownPlayer.value}:${from.value}:${to.value}`,
+              `player:${shownPlayer.value}:${from.value}:${to.value}`,
               () =>
                 $fetch(`/player/${shownPlayer.value}`, {
                   query: {
