@@ -1,5 +1,10 @@
 # Changelog
 
+## v3.1.31 (20260722)
+
+- upgrade dependencies
+- upgrade nuxt to v4.5.0
+
 ## v3.1.30 (20260628)
 
 - upgrade dependencies
