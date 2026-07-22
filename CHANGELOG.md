@@ -1,6 +1,6 @@
 # Changelog
 
-## v3.1.20 (20260628)
+## v3.1.30 (20260628)
 
 - upgrade dependencies
 - rework dockerfile
