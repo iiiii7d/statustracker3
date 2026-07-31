@@ -1,0 +1,10 @@
+{
+  "dynmapLink": "https://dynmap.minecartrapidtransit.net/main/standalone/dynmap_new.json",
+  "db": {
+    "database": "statustracker4",
+    "host": "localhost",
+    "user": "postgres",
+    "password": "password",
+    "port": 5432
+  }
+}
