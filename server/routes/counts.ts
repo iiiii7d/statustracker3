@@ -1,4 +1,4 @@
-import { type CountTable, getDB } from "~~/server/db";
+import { type CountTable, getDB } from "#server/db";
 import { z } from "zod/v4";
 import { type Selectable, sql } from "kysely";
 import * as df from "date-fns";

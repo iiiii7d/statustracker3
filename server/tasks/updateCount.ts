@@ -1,4 +1,4 @@
-import { type Database, getDB } from "../db";
+import { type Database, getDB } from "#server/db";
 import { sql, type Transaction } from "kysely";
 
 async function currentPlayerList(): Promise<string[]> {
