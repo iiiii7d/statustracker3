@@ -1,7 +1,5 @@
-import winston from "winston";
+import { createConsola } from "consola";
 
-export default winston.createLogger({
-  format: winston.format.cli(),
-  level: "verbose",
-  transports: [new winston.transports.Console()],
+export default createConsola({
+  level: 4,
 });

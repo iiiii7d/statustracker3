@@ -93,7 +93,7 @@ export default defineTask({
                   ),
                 files: [attachment1, attachment2],
               });
-              logger.info(`Webhook run \`${id}\` successful`);
+              logger.success(`Webhook run \`${id}\` successful`);
             } finally {
               await browser.close();
             }

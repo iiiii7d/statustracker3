@@ -16,7 +16,7 @@ async function currentPlayerList(): Promise<string[]> {
   const playerUuids = (
     await Promise.all(playerNames.map((a) => nameToUUID(a)))
   ).filter((a) => a !== null);
-  logger.info("Retrieval of current player list successful");
+  logger.success("Retrieval of current player list successful");
   return playerUuids;
 }
 

@@ -50,7 +50,7 @@ export type Config = z.infer<typeof configSchema>;
 // eslint-disable-next-line consistent-return
 export function getConfig(): Config {
   if (process.env.CONFIG) {
-    logger.info("Using config found in `CONFIG`");
+    logger.start("Using config found in `CONFIG`");
     return configSchema.parse(JSON.parse(process.env.CONFIG));
   }
 
@@ -58,13 +58,13 @@ export function getConfig(): Config {
     process.env.CONFIG_PATH ??
     (process.env.DOCKER ? "../config.json" : "config.json");
   if (fs.existsSync(configPath)) {
-    logger.info(`Using config found in \`${configPath}\``);
+    logger.start(`Using config found in \`${configPath}\``);
     return configSchema.parse(
       JSON.parse(fs.readFileSync(configPath).toString()),
     );
   }
 
-  logger.error(`Could not find config at ${configPath}`);
+  logger.fatal(`Could not find config at ${configPath}`);
   process.exit(1);
 }
 export const config = getConfig();
