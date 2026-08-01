@@ -7,11 +7,12 @@ if (route.path !== "/")
   });
 </script>
 <template>
-  <Chart />
-  <Input />
-  <hr />
-  <CategoryStats />
-  <hr />
-  <a href="https://github.com/iiiii7d/statustracker3">StatusTracker3 by 7d</a> |
-  <a href="/licenses.txt">Licenses</a>
+  <UApp>
+    <UMain class="mx-8">
+      <Chart />
+      <Input />
+      <USeparator class="m-8" />
+      <CategoryStats />
+    </UMain>
+  </UApp>
 </template>

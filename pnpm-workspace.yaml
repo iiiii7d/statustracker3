@@ -3,6 +3,7 @@ allowBuilds:
   esbuild: true
   puppeteer: true
   unrs-resolver: true
+  vue-demi: true
 minimumReleaseAge: 4320
 minimumReleaseAgeStrict: false
 overrides:

@@ -1,24 +1,9 @@
 <script setup lang="ts">
-const model = defineModel<boolean>();
+const checked = defineModel<boolean>({ default: false });
 </script>
 
 <template>
-  <button id="button" :class="{ checked: model }" @click="model = !model">
+  <UButton :variant="checked ? 'solid' : 'soft'" @click="checked = !checked">
     <slot />
-  </button>
+  </UButton>
 </template>
-
-<style scoped>
-button.checked {
-  background-color: #8c0;
-  color: #000;
-  border: unset;
-  box-shadow: #8c08 0px 3px;
-
-  &:hover {
-    background-color: #bf3;
-    color: #000;
-    box-shadow: #bf38 0px 4px;
-  }
-}
-</style>

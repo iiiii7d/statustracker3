@@ -77,10 +77,24 @@ export async function updatePlayer() {
 </script>
 <script setup lang="ts">
 /* eslint-disable import/first */
-// temporary
-import "echarts";
-import type * as echarts from "echarts";
+import { use } from "echarts/core";
+import { LineChart } from "echarts/charts";
+import {
+  GridComponent,
+  TooltipComponent,
+  MarkAreaComponent,
+} from "echarts/components";
+import { CanvasRenderer } from "echarts/renderers";
 import VChart, { THEME_KEY } from "vue-echarts";
+import type * as echarts from "echarts";
+
+use([
+  GridComponent,
+  TooltipComponent,
+  MarkAreaComponent,
+  LineChart,
+  CanvasRenderer,
+]);
 provide(THEME_KEY, "dark");
 
 const { data: categories } = await useFetch("/categories");
@@ -135,101 +149,6 @@ const series = computed<echarts.LineSeriesOption[]>(() =>
     }),
 );
 
-// const chartData = computed<ChartData<"line", Point[]>>(() => ({
-//   // labels: counts.value?.map(c => c.timestamp),
-//   datasets: Array.from(counts.value.entries())
-//     .sort(([a], [b]) => b - a)
-//     .filter(([ma]) => ma !== 0 || shownMovingAverages[0])
-//     .flatMap(([ma, m], i) => {
-//       const allLine = generateLine(
-//         "all",
-//         "#fff",
-//         m.map((a) => ({ x: a.timestamp, y: a.all })) as unknown as Point[],
-//         i,
-//         ma,
-//       );
-//       const catLines = Object.entries(categories.value!).map(
-//         ([cat, { colour }]) =>
-//           generateLine(
-//             cat,
-//             colour,
-//             m.map((a) => ({
-//               x: a.timestamp,
-//               y: a[`cat_${cat}`],
-//             })) as unknown as Point[],
-//             i,
-//             ma,
-//           ),
-//       );
-//       return [allLine, ...catLines];
-//     }),
-// }));
-
-// const windowInnerWidth = ref(1000);
-// onMounted(() => {
-//   windowInnerWidth.value = window.innerWidth;
-//   window.addEventListener("resize", () => {
-//     windowInnerWidth.value = window.innerWidth;
-//   });
-// });
-
-// eslint-disable-next-line max-lines-per-function
-// const chartOptions = computed<ChartOptions<"line">>(() => ({
-//   animation: false,
-//   aspectRatio: windowInnerWidth.value / 750,
-//   plugins: {
-//     annotation: {
-//       common: {
-//         drawTime: "beforeDraw",
-//       },
-//       annotations: (player.value?.playTimes ?? []).map(
-//         ({ join: j, leave: l }) => {
-//           const join = df.parseISO(j);
-//           const leave = l === null ? new Date() : df.parseISO(l);
-//           return {
-//             type: "box",
-//             backgroundColor: "#fc02",
-//             borderWidth: 0,
-//             xMin: join as unknown as number,
-//             xMax: leave as unknown as number,
-//             label: {
-//               drawTime: "afterDatasetsDraw",
-//               display: false,
-//               content: `${df.format(join, "HH:mm")} → ${df.format(leave, "HH:mm")}`,
-//               color: "#fc0",
-//             },
-//             enter({ element }) {
-//               if (element.label) element.label.options.display = true;
-//               return true;
-//             },
-//             leave({ element }) {
-//               if (element.label) element.label.options.display = false;
-//               return true;
-//             },
-//           };
-//         },
-//       ),
-//     },
-//   },
-//   scales: {
-//     x: {
-//       type: "time",
-//       grid: {
-//         color: ["#555"],
-//       },
-//       time: {
-//         // unit: "minute",
-//       },
-//     },
-//     y: {
-//       grid: {
-//         color: ["#999"],
-//       },
-//       min: 0,
-//     },
-//   },
-// }));
-
 const playTimes = computed<
   [{ name: string; xAxis: Date }, { xAxis: Date }][] | null
 >(
@@ -254,6 +173,7 @@ const option = computed<
     | echarts.LineSeriesOption
     | echarts.TooltipComponentOption
     | echarts.GridComponentOption
+    | echarts.MarkAreaComponentOption
   >
 >(() => ({
   backgroundColor: "transparent",
@@ -296,12 +216,7 @@ const option = computed<
 </script>
 
 <template>
-  <VChart
-    class="chart"
-    :option="option"
-    style="height: 75vh"
-    :autoresize="true"
-  />
+  <VChart class="chart h-[75dvh]!" :option="option" autoresize />
 </template>
 
 <style scoped></style>

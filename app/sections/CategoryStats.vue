@@ -1,32 +1,89 @@
 <script setup lang="ts">
 import { counts } from "~/sections/Chart.vue";
+import { use } from "echarts/core";
+import { BarChart } from "echarts/charts";
+import { GridComponent, TitleComponent } from "echarts/components";
+import { CanvasRenderer } from "echarts/renderers";
+import VChart, { THEME_KEY } from "vue-echarts";
+import type * as echarts from "echarts";
+
+use([GridComponent, BarChart, TitleComponent, CanvasRenderer]);
+provide(THEME_KEY, "dark");
 
 const { data: categories } = await useFetch("/categories");
 
-function percentage(column: "all" | `cat_${string}`): number {
+const percentages = computed(() => {
   const count2 = counts.value.get(0);
-  if (count2 === undefined) return 0;
-  return (
-    Math.round(
-      (count2.filter((c) => c[column]).length / count2.length) * 100 * 100,
-    ) / 100
+  if (count2 === undefined) return [];
+  const columns: ("all" | `cat_${string}`)[] = [
+    "all",
+    ...Object.keys(categories.value!).map((c) => `cat_${c}` as const),
+  ];
+  return columns.map(
+    (column) =>
+      Math.round(
+        (count2.filter((c) => c[column]).length / count2.length) * 100 * 100,
+      ) / 100,
   );
-}
+});
+
+const option = computed<
+  echarts.ComposeOption<
+    | echarts.BarSeriesOption
+    | echarts.GridComponentOption
+    | echarts.TitleComponentOption
+  >
+>(() => ({
+  title: {
+    text: "% of the time players were online",
+    textStyle: {
+      color: "#fff",
+    },
+  },
+  backgroundColor: "transparent",
+  xAxis: {
+    type: "value",
+  },
+  yAxis: {
+    type: "category",
+    data: ["all", ...Object.keys(categories.value!)],
+    axisLabel: {
+      show: false,
+    },
+  },
+  series: [
+    {
+      type: "bar",
+      colorBy: "data",
+      data: percentages.value,
+      color: [
+        "#fff",
+        ...Object.values(categories.value!).map(({ colour }) => colour),
+      ],
+      label: {
+        show: true,
+        formatter: "{b}: {c}%",
+        fontSize: 30,
+      },
+    },
+  ],
+}));
 </script>
 
 <template>
-  <section id="statistics" style="width: fit-content">
-    <h3>Statistics</h3>
-    <span
-      >People were online <b>{{ percentage("all") }}%</b> of this time
-      period</span
-    ><br />
-    <u>By category:</u><br />
-    <span v-for="[name, { colour }] in Object.entries(categories!)" :key="name">
-      &nbsp;&nbsp;<b :style="{ color: colour }">{{ name }}: </b>
-      {{ percentage(`cat_${name}`) }}%<br />
-    </span>
-  </section>
+  <VChart class="chart h-[75dvh]!" :option="option" :autoresize="true" />
+  <!--  <section id="statistics" class="w-fit">-->
+  <!--    <h3>Statistics</h3>-->
+  <!--    <span-->
+  <!--      >People were online <b>{{ percentage("all") }}%</b> of this time-->
+  <!--      period</span-->
+  <!--    ><br />-->
+  <!--    <u>By category:</u><br />-->
+  <!--    <span v-for="[name, { colour }] in Object.entries(categories!)" :key="name">-->
+  <!--      &nbsp;&nbsp;<b :style="{ color: colour }">{{ name }}: </b>-->
+  <!--      {{ percentage(`cat_${name}`) }}%<br />-->
+  <!--    </span>-->
+  <!--  </section>-->
 </template>
 
 <style scoped></style>
