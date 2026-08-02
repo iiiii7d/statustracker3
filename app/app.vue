@@ -10,7 +10,15 @@ if (route.path !== "/")
   <UApp>
     <UMain class="mx-8">
       <Chart />
-      <Input />
+      <section
+        id="input"
+        class="select-none flex flex-wrap gap-5 justify-center text-center *:grow-3 min-h-[20dvh]"
+      >
+        <InfoCard />
+        <DateRangeCard />
+        <PlayerCard />
+        <RollingAvgCard />
+      </section>
       <USeparator class="m-8" />
       <CategoryStats />
     </UMain>

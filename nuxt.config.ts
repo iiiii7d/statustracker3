@@ -44,6 +44,6 @@ export default defineNuxtConfig({
     },
   },
 
-  components: ["~/sections", "~/components"],
+  components: ["~/components"],
   modules: nuxtEslintExists ? ["@nuxt/eslint", "@nuxt/ui"] : ["@nuxt/ui"],
 });

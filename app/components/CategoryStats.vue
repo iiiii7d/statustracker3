@@ -72,18 +72,6 @@ const option = computed<
 
 <template>
   <VChart class="chart h-[75dvh]!" :option="option" :autoresize="true" />
-  <!--  <section id="statistics" class="w-fit">-->
-  <!--    <h3>Statistics</h3>-->
-  <!--    <span-->
-  <!--      >People were online <b>{{ percentage("all") }}%</b> of this time-->
-  <!--      period</span-->
-  <!--    ><br />-->
-  <!--    <u>By category:</u><br />-->
-  <!--    <span v-for="[name, { colour }] in Object.entries(categories!)" :key="name">-->
-  <!--      &nbsp;&nbsp;<b :style="{ color: colour }">{{ name }}: </b>-->
-  <!--      {{ percentage(`cat_${name}`) }}%<br />-->
-  <!--    </span>-->
-  <!--  </section>-->
 </template>
 
 <style scoped></style>
