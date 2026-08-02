@@ -8,11 +8,9 @@ import {
   updatePlayer,
   shownMovingAverages,
 } from "~/sections/Chart.vue";
-import * as df from "date-fns";
-import { z } from "zod/v4";
 import * as dt from "@internationalized/date";
-
-const now = () => dt.now(dt.getLocalTimeZone());
+import { z } from "zod/v4";
+import { now } from "~/utils";
 
 const initFromTo = computed(() => {
   const { query: routeQuery } = useRoute();
@@ -20,11 +18,11 @@ const initFromTo = computed(() => {
     .object({
       from: z.iso
         .datetime({ local: false, offset: true })
-        .transform((s) => dt.parseAbsolute(s, dt.getLocalTimeZone()))
+        .transform((s) => dt.parseAbsoluteToLocal(s))
         .default(now().subtract({ days: 1 })),
       to: z.iso
         .datetime({ local: false, offset: true })
-        .transform((s) => dt.parseAbsolute(s, dt.getLocalTimeZone()))
+        .transform((s) => dt.parseAbsoluteToLocal(s))
         .default(now().add({ minutes: 1 })),
     })
     .refine(
@@ -59,8 +57,8 @@ function setPreset(d: dt.DateDuration) {
 async function query() {
   loading.value += 1;
   try {
-    from.value = inputFrom.value.toDate();
-    to.value = inputTo.value.toDate();
+    from.value = inputFrom.value;
+    to.value = inputTo.value;
     shownPlayer.value = inputPlayer.value.trim();
     await Promise.all([updateCounts(), updatePlayer()]);
   } finally {
@@ -70,14 +68,14 @@ async function query() {
 
 onMounted(() => query());
 
-const playDuration = computed(() =>
-  player.value === null
-    ? null
-    : df.formatDuration({
-        hours: Math.floor(player.value.playDuration / 60),
-        minutes: player.value.playDuration % 60,
-      }),
-);
+const playDuration = computed(() => {
+  if (player.value === null) {
+    return null;
+  }
+  const h = Math.floor(player.value.playDuration / 60);
+  const m = player.value.playDuration % 60;
+  return `${h}h ${m}min`;
+});
 </script>
 
 <template>

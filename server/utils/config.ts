@@ -1,7 +1,7 @@
 import { z } from "zod/v4";
 import { WebhookClient, type WebhookClientData } from "discord.js";
 import { Pool, type PoolConfig } from "pg";
-import type { Duration } from "date-fns";
+import type * as dt from "@internationalized/date";
 import * as fs from "node:fs";
 import logger from "#server/utils/logger";
 import type { LaunchOptions } from "puppeteer";
@@ -14,7 +14,7 @@ const webhookConfigSchema = z.object({
       z.string(),
       z.object({
         cron: z.string(),
-        range: z.custom<Duration>(),
+        range: z.custom<dt.DateTimeDuration>(),
         message: z
           .string()
           .default(

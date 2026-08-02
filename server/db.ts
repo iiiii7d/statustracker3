@@ -1,9 +1,16 @@
-import { type Generated, Kysely, PostgresDialect, sql } from "kysely";
+import {
+  type Expression,
+  type OperationNode,
+  type Generated,
+  Kysely,
+  PostgresDialect,
+  sql,
+} from "kysely";
 import { types as pgTypes } from "pg";
-import * as df from "date-fns";
+import * as dt from "@internationalized/date";
 
 export interface CountTable {
-  timestamp: Generated<Date>;
+  timestamp: Generated<dt.ZonedDateTime>;
   all: number;
   [key: `cat_${string}`]: number;
 }
@@ -11,8 +18,8 @@ export interface CountTable {
 export interface PlayerTable {
   id: Generated<number>;
   uuid: string;
-  join: Date;
-  leave: Date | null;
+  join: dt.ZonedDateTime;
+  leave: dt.ZonedDateTime | null;
 }
 
 export interface VersionTable {
@@ -22,7 +29,7 @@ export interface VersionTable {
 
 export interface WebhooksTable {
   id: string;
-  nextUpdate: Date;
+  nextUpdate: dt.ZonedDateTime;
 }
 
 export interface Database {
@@ -32,7 +39,23 @@ export interface Database {
   webhooks: WebhooksTable;
 }
 
-pgTypes.setTypeParser(pgTypes.builtins.TIMESTAMPTZ, (val) => df.parseISO(val));
+pgTypes.setTypeParser(pgTypes.builtins.TIMESTAMPTZ, (val) =>
+  dt.parseAbsoluteToLocal(val.replace(" ", "T")),
+);
+
+declare module "@internationalized/date" {
+  interface ZonedDateTime extends Expression<ZonedDateTime> {
+    get expressionType(): undefined;
+
+    toOperationNode(): OperationNode;
+  }
+}
+// @ts-ignore
+dt.ZonedDateTime.prototype.expressionType = undefined;
+// eslint-disable-next-line func-names
+dt.ZonedDateTime.prototype.toOperationNode = function (this: dt.ZonedDateTime) {
+  return sql<string>`${this.toAbsoluteString()}`.toOperationNode();
+};
 
 const db = new Kysely<Database>({
   dialect: new PostgresDialect({

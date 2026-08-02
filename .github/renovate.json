@@ -4,15 +4,5 @@
     "github>iiiii7d/renovate-config",
     ":pinAllExceptPeerDependencies"
   ],
-  "baseBranchPatterns": ["v4", "dev", "$default"],
-  "packageRules": [
-    {
-      "matchPackageNames": [
-        "chartjs-adapter-date-fns",
-        "chartjs-plugin-annotation",
-        "date-fns"
-      ],
-      "abandonmentThreshold": null
-    }
-  ]
+  "baseBranchPatterns": ["v4", "dev", "$default"]
 }

@@ -1,10 +1,15 @@
 <script lang="ts">
-import type { InternalApi } from "nitropack/types";
-import * as df from "date-fns";
 import { FetchError } from "ofetch";
+import { now, hhmm } from "~/utils";
+import {
+  countsAPI,
+  type CountsAPI,
+  playerAPI,
+  type PlayerAPI,
+} from "#shared/api.ts";
 // temp value
-export const from = ref(new Date());
-export const to = ref(new Date());
+export const from = ref(now());
+export const to = ref(now());
 
 export const shownMovingAverages = reactive<Record<MovingAverage, boolean>>({
   0: true,
@@ -13,12 +18,10 @@ export const shownMovingAverages = reactive<Record<MovingAverage, boolean>>({
   24: false,
   168: false,
 });
-export const counts = ref(
-  new Map<MovingAverage, InternalApi["/counts"]["default"]>(),
-);
+export const counts = ref(new Map<MovingAverage, CountsAPI>());
 
 export const shownPlayer = ref("");
-export const player = ref<InternalApi["/player/:name"]["default"] | null>(null);
+export const player = ref<PlayerAPI | null>(null);
 
 export async function updateCounts() {
   counts.value = new Map(
@@ -28,21 +31,18 @@ export async function updateCounts() {
         .map(async ([ma2]) => {
           const ma = parseInt(ma2) as MovingAverage;
           const { data } = await useAsyncData(
-            `counts:${from.value}:${to.value}:${ma}`,
+            `counts:${from.value.toAbsoluteString()}:${to.value.toAbsoluteString()}:${ma}`,
             () =>
               $fetch("/counts", {
                 query: {
-                  from: from.value.toISOString(),
-                  to: to.value.toISOString(),
+                  from: from.value.toAbsoluteString(),
+                  to: to.value.toAbsoluteString(),
                   movingAverage: ma,
                 },
-              }),
+              }).then(countsAPI.de),
             { deep: false },
           );
-          return [ma, data.value] as [
-            MovingAverage,
-            InternalApi["/counts"]["default"],
-          ];
+          return [ma, data.value] as [MovingAverage, CountsAPI];
         }),
     ),
   );
@@ -55,14 +55,14 @@ export async function updatePlayer() {
         ? null
         : (
             await useAsyncData(
-              `player:${shownPlayer.value}:${from.value}:${to.value}`,
+              `player:${shownPlayer.value}:${from.value.toAbsoluteString()}:${to.value.toAbsoluteString()}`,
               () =>
                 $fetch(`/player/${shownPlayer.value}`, {
                   query: {
-                    from: from.value.toISOString(),
-                    to: to.value.toISOString(),
+                    from: from.value.toAbsoluteString(),
+                    to: to.value.toAbsoluteString(),
                   },
-                }),
+                }).then(playerAPI.de),
               { deep: false },
             )
           ).data.value!;
@@ -105,7 +105,7 @@ const ALPHA = "f84210";
 function generateLine(
   name: string,
   colour: string,
-  y: [string, number][],
+  y: [Date, number][],
   i: number,
   ma: MovingAverage,
 ): echarts.LineSeriesOption {
@@ -131,7 +131,7 @@ const series = computed<echarts.LineSeriesOption[]>(() =>
       const allLine = generateLine(
         "all",
         "#fff",
-        m.map((a) => [a.timestamp, a.all] as [string, number]),
+        m.map((a) => [a.timestamp.toDate(), a.all] as [Date, number]),
         i,
         ma,
       );
@@ -140,7 +140,9 @@ const series = computed<echarts.LineSeriesOption[]>(() =>
           generateLine(
             cat,
             colour,
-            m.map((a) => [a.timestamp, a[`cat_${cat}`]] as [string, number]),
+            m.map(
+              (a) => [a.timestamp.toDate(), a[`cat_${cat}`]] as [Date, number],
+            ),
             i,
             ma,
           ),
@@ -153,16 +155,15 @@ const playTimes = computed<
   [{ name: string; xAxis: Date }, { xAxis: Date }][] | null
 >(
   () =>
-    player.value?.playTimes?.map(({ join: j, leave: l }) => {
-      const join = df.parseISO(j);
-      const leave = l === null ? new Date() : df.parseISO(l);
+    player.value?.playTimes?.map(({ join, leave: leave2 }) => {
+      const leave = leave2 ?? now();
       return [
         {
-          name: `${df.format(join, "HH:mm")} → ${df.format(leave, "HH:mm")}`,
-          xAxis: join,
+          name: `${hhmm(join)} → ${hhmm(leave)}`,
+          xAxis: join.toDate(),
         },
         {
-          xAxis: leave,
+          xAxis: leave.toDate(),
         },
       ];
     }) ?? null,

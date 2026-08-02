@@ -26,7 +26,6 @@
     "@nuxt/ui": "4.10.0",
     "@tsconfig/strictest": "2.0.8",
     "consola": "3.4.2",
-    "date-fns": "4.4.0",
     "echarts": "6.1.0",
     "kysely": "0.29.4",
     "nuxt": "4.5.1",

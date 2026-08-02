@@ -1,8 +1,9 @@
 import { AttachmentBuilder } from "discord.js";
-import * as df from "date-fns";
+import * as dt from "@internationalized/date";
 import { CronExpressionParser } from "cron-parser";
 import puppeteer from "puppeteer";
 import { getDB } from "~~/server/db";
+import { now } from "#server/utils";
 
 export default defineTask({
   meta: {
@@ -27,13 +28,10 @@ export default defineTask({
               .executeTakeFirst()
           )?.nextUpdate;
 
-          if (
-            nextUpdate !== undefined &&
-            df.compareAsc(new Date(), nextUpdate) >= 0
-          ) {
+          if (nextUpdate !== undefined && now().compare(nextUpdate) >= 0) {
             logger.info(`Running webhook \`${id}\``);
-            const from = df.sub(new Date(), range);
-            const to = new Date();
+            const from = now().subtract(range);
+            const to = now();
 
             const browser = await puppeteer.launch({
               ...(process.env.DOCKER
@@ -51,7 +49,9 @@ export default defineTask({
               await page.goto(webhookConfig.serverUrl);
               await page.setViewport({ width: 1920, height: 1080 });
 
-              const inputFrom = df.formatISO(from).replace(/(?:Z|\+.*)$/u, "");
+              const inputFrom = from
+                .toAbsoluteString()
+                .replace(/(?:Z|\+.*)$/u, "");
               await page.locator("input#from").fill(inputFrom);
               await page.locator("button#query").click();
               for (let i = 0; i < 15; i += 1) {
@@ -79,17 +79,17 @@ export default defineTask({
                 content: message
                   .replaceAll(
                     "%url%",
-                    `${webhookConfig.serverUrl}?from=${from.toISOString()}&to=${to.toISOString()}`,
+                    `${webhookConfig.serverUrl}?from=${from.toAbsoluteString()}&to=${to.toAbsoluteString()}`,
                   )
                   .replaceAll("%id%", id)
-                  .replaceAll("%range%", df.formatDuration(range))
+                  .replaceAll("%range%", `${range}`)
                   .replaceAll(
                     "%from%",
-                    Math.round(from.getTime() / 1000).toString(),
+                    Math.round(from.toDate().getTime() / 1000).toString(),
                   )
                   .replaceAll(
                     "%to%",
-                    Math.round(to.getTime() / 1000).toString(),
+                    Math.round(to.toDate().getTime() / 1000).toString(),
                   ),
                 files: [attachment1, attachment2],
               });
@@ -99,7 +99,7 @@ export default defineTask({
             }
           }
 
-          const newNextUpdate = interval.next().toDate();
+          const newNextUpdate = dt.fromDateToLocal(interval.next().toDate());
           logger.info(`Webhook \`${id}\` will run again at ${newNextUpdate}`);
           if (nextUpdate === undefined) {
             await db

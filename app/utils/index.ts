@@ -1,4 +1,4 @@
-import * as df from "date-fns";
+import * as dt from "@internationalized/date";
 
 export const movingAverages = {
   0: "Raw",
@@ -10,6 +10,10 @@ export const movingAverages = {
 
 export type MovingAverage = keyof typeof movingAverages;
 
-export function dateToInputValue(date: Date): string {
-  return df.formatISO(date).replace(/(?:Z|\+.*)$/u, "");
+export const now = () => dt.now(dt.getLocalTimeZone());
+
+export function hhmm(datetime: dt.AnyTime): string {
+  const hour = datetime.hour.toString().padStart(2, "0");
+  const minute = datetime.minute.toString().padStart(2, "0");
+  return `${hour}:${minute}`;
 }

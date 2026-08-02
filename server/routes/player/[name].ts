@@ -1,20 +1,30 @@
 import { z } from "zod/v4";
 import { sql } from "kysely";
-import * as df from "date-fns";
+import * as dt from "@internationalized/date";
 import { getDB } from "#server/db";
+import { now } from "#server/utils";
+import { playerAPI, type PlayerAPIJson } from "#shared/api.ts";
 
-const schema = z.object({
-  from: z.iso
-    .datetime({ local: false, offset: true })
-    .transform((a) => df.parseISO(a)),
-  to: z.iso
-    .datetime({ local: false, offset: true })
-    .transform((a) => df.parseISO(a))
-    .default(new Date()),
-});
+const schema = z
+  .object({
+    from: z.iso
+      .datetime({ local: false, offset: true })
+      .transform((a) => dt.parseAbsoluteToLocal(a)),
+    to: z.iso
+      .datetime({ local: false, offset: true })
+      .transform((a) => dt.parseAbsoluteToLocal(a))
+      .default(now()),
+  })
+  .refine(
+    ({ from: f, to: t }) =>
+      !(f instanceof dt.ZonedDateTime) ||
+      !(t instanceof dt.ZonedDateTime) ||
+      f.compare(t) < 0,
+    { error: "`to` is earlier than `from`" },
+  );
 
 // eslint-disable-next-line max-lines-per-function,max-statements
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<PlayerAPIJson> => {
   logger.verbose(`Processing ${event.path}`);
   const player = getRouterParam(event, "name")!;
   const db = await getDB();
@@ -22,12 +32,7 @@ export default defineEventHandler(async (event) => {
   const { from, to } = await getValidatedQuery(event, (body) =>
     schema.parse(body),
   );
-  if (df.compareAsc(from, to) === 1) {
-    throw createError({
-      statusCode: 400,
-      message: "`to` is earlier than `from`",
-    });
-  }
+
   const uuid = await nameToUUID(player);
   if (uuid === null) {
     throw createError({
@@ -36,7 +41,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const playTimesP = await db
+  const playTimesP = db
     .selectFrom("players")
     .select(["join", "leave"])
     .where((eb) =>
@@ -89,8 +94,8 @@ export default defineEventHandler(async (event) => {
     playDurationP,
   ]);
 
-  return {
+  return playerAPI.ser({
     playTimes,
     playDuration,
-  };
+  });
 });

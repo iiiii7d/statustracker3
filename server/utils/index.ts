@@ -1,7 +1,8 @@
 import { sql } from "kysely";
+import * as dt from "@internationalized/date";
 
-export const currentTimestamp = sql<Date>`date_trunc('minute', now())`;
-export const previousTimestamp = sql<Date>`date_trunc('minute', now() - INTERVAL '1 minute')`;
+export const currentTimestamp = sql<dt.ZonedDateTime>`date_trunc('minute', now())`;
+export const previousTimestamp = sql<dt.ZonedDateTime>`date_trunc('minute', now() - INTERVAL '1 minute')`;
 
 const cache = new Map<string, string | null>();
 
@@ -21,3 +22,5 @@ export async function nameToUUID(name: string): Promise<string | null> {
   logger.verbose(`Found that \`${name}\` has UUID \`${uuid}\``);
   return uuid;
 }
+
+export const now = () => dt.now(dt.getLocalTimeZone());
