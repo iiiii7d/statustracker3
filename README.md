@@ -1,7 +1,7 @@
-# StatusTracker 3
+# StatusTracker 4
 
-![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/iiiii7d/statustracker3?include_prereleases)
-![GitHub License](https://img.shields.io/github/license/iiiii7d/statustracker3)
+![GitHub release (latest SemVer including pre-releases)](https://img.shields.io/github/v/release/iiiii7d/statustracker4?include_prereleases)
+![GitHub License](https://img.shields.io/github/license/iiiii7d/statustracker4)
 
 Track players on a Minecraft server through their [Dynmap](https://www.spigotmc.org/resources/dynmap%C2%AE.274/)
 
@@ -17,9 +17,9 @@ Track players on a Minecraft server through their [Dynmap](https://www.spigotmc.
 ## Usage with Docker
 
 1. Set up a [Postgres](https://www.postgresql.org/) database somewhere
-2. `docker pull ghcr.io/iiiii7d/statustracker3:latest`
+2. `docker pull ghcr.io/iiiii7d/statustracker4:latest`
 3. Create `config.json` (or any other name) in a convenient location (see below for configuration) and take note of its path
-4. `docker run -dp <host_port>:3000 -v <host_config_path>:config.json ghcr.io/iiiii7d/statustracker3:latest` where
+4. `docker run -dp <host_port>:3000 -v <host_config_path>:config.json ghcr.io/iiiii7d/statustracker4:latest` where
    - `<host_port>` is the port on the host StatusTracker will be hosted on
    - `<host_config_path>` is the path on the host where `config.json` is
 
@@ -27,8 +27,8 @@ Track players on a Minecraft server through their [Dynmap](https://www.spigotmc.
 
 ```yaml
 services:
-  statustracker3:
-    image: ghcr.io/iiiii7d/statustracker3:latest
+  statustracker4:
+    image: ghcr.io/iiiii7d/statustracker4:latest
     ports:
       - "<host_port>:3000"
     volumes:
@@ -48,7 +48,7 @@ services:
   // https://node-postgres.com/apis/pool
   // https://node-postgres.com/apis/client
   "db": {
-    "database": "statustracker3",
+    "database": "statustracker4",
     "host": "localhost",
     "user": "user",
     "port": 5432,

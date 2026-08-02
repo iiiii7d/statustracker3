@@ -15,7 +15,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: "StatusTracker 3",
+      title: "StatusTracker 4",
       htmlAttrs: {
         lang: "en",
       },
