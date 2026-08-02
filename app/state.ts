@@ -1,4 +1,3 @@
-import { now } from "~/utils";
 import {
   countsAPI,
   type CountsAPI,
@@ -6,6 +5,7 @@ import {
   type PlayerAPI,
 } from "#shared/api.ts";
 import { FetchError } from "ofetch";
+import type * as dt from "@internationalized/date";
 
 export const loading = ref(0);
 export const wrapLoading =
@@ -17,8 +17,11 @@ export const wrapLoading =
     return result;
   };
 
-export const from = shallowRef(now());
-export const to = shallowRef(now());
+export const from = shallowRef<dt.ZonedDateTime | undefined>();
+export const to = shallowRef<dt.ZonedDateTime | undefined>();
+export const dateInvalid = computed(
+  () => !from.value || !to.value || from.value.compare(to.value) >= 0,
+);
 
 export const shownMovingAverages = reactive<Record<MovingAverage, boolean>>({
   0: true,
@@ -32,6 +35,7 @@ export const counts = ref(new Map<MovingAverage, CountsAPI>());
 watch(
   [from, to],
   wrapLoading(async () => {
+    if (dateInvalid.value) return;
     counts.value = new Map<MovingAverage, CountsAPI>(
       await Promise.all(
         Object.entries(shownMovingAverages)
@@ -40,8 +44,8 @@ watch(
             const ma = parseInt(ma2) as MovingAverage;
             const data = await $fetch("/counts", {
               query: {
-                from: from.value.toAbsoluteString(),
-                to: to.value.toAbsoluteString(),
+                from: from.value!.toAbsoluteString(),
+                to: to.value!.toAbsoluteString(),
                 movingAverage: ma,
               },
             });
@@ -61,7 +65,9 @@ export const player = ref<
 >(null);
 watch(
   [from, to, playerUsername],
+  // eslint-disable-next-line max-statements
   wrapLoading(async () => {
+    if (dateInvalid.value) return;
     if (!playerUsername.value) {
       player.value = null;
       return;
@@ -69,8 +75,8 @@ watch(
     try {
       const data = await $fetch(`/player/${playerUsername.value}`, {
         query: {
-          from: from.value.toAbsoluteString(),
-          to: to.value.toAbsoluteString(),
+          from: from.value!.toAbsoluteString(),
+          to: to.value!.toAbsoluteString(),
         },
       });
       player.value = { ty: "success", ...playerAPI.de(data) };

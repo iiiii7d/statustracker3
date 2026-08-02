@@ -141,12 +141,14 @@ const option = computed<
 </script>
 
 <template>
-  <VChart
-    class="chart h-[75dvh]!"
-    :option="option"
-    autoresize
-    :loading="loading !== 0"
-  />
+  <div class="h-[75dvh]!">
+    <VChart
+      class="chart"
+      :option="option"
+      autoresize
+      :loading="loading !== 0"
+    />
+  </div>
 </template>
 
 <style scoped></style>

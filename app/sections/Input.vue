@@ -6,10 +6,13 @@ import {
   shownMovingAverages,
   playerUsername,
   loading,
+  dateInvalid,
 } from "~/state.ts";
 import * as dt from "@internationalized/date";
 import { z } from "zod/v4";
 import { now } from "~/utils";
+
+const { locale } = new Intl.NumberFormat().resolvedOptions();
 
 const initFromTo = computed(() => {
   const { query: routeQuery } = useRoute();
@@ -85,23 +88,35 @@ const playDuration = computed(() => {
       </p>
     </UCard>
 
-    <UCard class="flex flex-col justify-center">
+    <UCard
+      class="flex flex-col justify-center"
+      :class="{ 'ring-error': dateInvalid && from && to }"
+    >
       <div>
         <UInputDate
           v-model="from"
           :hour-cycle="24"
-          :is-date-unavailable="(f) => f.compare(to) > 0"
+          :is-date-unavailable="() => dateInvalid"
+          :color="dateInvalid ? 'error' : 'primary'"
           hide-time-zone
-          @blur="console.log"
+          :default-placeholder="now()"
+          :locale="locale"
         />
       </div>
-      <UIcon name="lucide:arrow-down" class="size-5 mt-1.5" />
+      <UIcon
+        name="lucide:arrow-down"
+        class="size-5 mt-1.5"
+        :class="{ 'text-error': dateInvalid && from && to }"
+      />
       <div>
         <UInputDate
           v-model="to"
           :hour-cycle="24"
-          :is-date-unavailable="(t) => t.compare(from) < 0"
+          :is-date-unavailable="() => dateInvalid"
+          :color="dateInvalid ? 'error' : 'primary'"
           hide-time-zone
+          :default-placeholder="now()"
+          :locale="locale"
         />
       </div>
       <p class="mt-2">
