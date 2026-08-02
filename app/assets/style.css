@@ -6,7 +6,11 @@
 }
 
 @theme {
-  --font-sans: "Public Sans", sans-serif;
+  --font-sans: "Nunito", system-ui, sans-serif;
+}
+
+button:hover {
+  cursor: pointer;
 }
 
 /*body {*/
