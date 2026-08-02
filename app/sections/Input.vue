@@ -3,11 +3,10 @@ import {
   from,
   to,
   player,
-  shownPlayer,
-  updateCounts,
-  updatePlayer,
   shownMovingAverages,
-} from "~/sections/Chart.vue";
+  playerUsername,
+  loading,
+} from "~/state.ts";
 import * as dt from "@internationalized/date";
 import { z } from "zod/v4";
 import { now } from "~/utils";
@@ -43,33 +42,18 @@ const initFromTo = computed(() => {
   return result.data;
 });
 
-const inputFrom = useState("inputFrom", () => initFromTo.value.from);
-const inputTo = useState("inputTo", () => initFromTo.value.to);
-
-const inputPlayer = useState("player", () => "");
-const loading = useState("loading", () => 0);
+onMounted(() => {
+  from.value = initFromTo.value.from;
+  to.value = initFromTo.value.to;
+});
 
 function setPreset(d: dt.DateDuration) {
-  inputFrom.value = now().subtract(d);
-  inputTo.value = now();
+  from.value = now().subtract(d);
+  to.value = now();
 }
-
-async function query() {
-  loading.value += 1;
-  try {
-    from.value = inputFrom.value;
-    to.value = inputTo.value;
-    shownPlayer.value = inputPlayer.value.trim();
-    await Promise.all([updateCounts(), updatePlayer()]);
-  } finally {
-    loading.value -= 1;
-  }
-}
-
-onMounted(() => query());
 
 const playDuration = computed(() => {
-  if (player.value === null) {
+  if (player.value?.ty !== "success") {
     return null;
   }
   const h = Math.floor(player.value.playDuration / 60);
@@ -104,18 +88,19 @@ const playDuration = computed(() => {
     <UCard class="flex flex-col justify-center">
       <div>
         <UInputDate
-          v-model="inputFrom"
+          v-model="from"
           :hour-cycle="24"
-          :is-date-unavailable="(f) => f.compare(inputTo) > 0"
+          :is-date-unavailable="(f) => f.compare(to) > 0"
           hide-time-zone
+          @blur="console.log"
         />
       </div>
       <UIcon name="lucide:arrow-down" class="size-5 mt-1.5" />
       <div>
         <UInputDate
-          v-model="inputTo"
+          v-model="to"
           :hour-cycle="24"
-          :is-date-unavailable="(t) => t.compare(inputFrom) < 0"
+          :is-date-unavailable="(t) => t.compare(from) < 0"
           hide-time-zone
         />
       </div>
@@ -129,36 +114,39 @@ const playDuration = computed(() => {
     </UCard>
     <UCard class="text-wrap w-sm content-center">
       <p><label for="player">Show play time for</label></p>
-      <UFieldGroup class="mt-2">
-        <UInput id="player" v-model="inputPlayer" placeholder="player username">
-          <template v-if="inputPlayer" #trailing>
-            <UIcon
-              class="cursor-pointer"
-              name="lucide:x"
-              @click="inputPlayer = ''"
-            />
-          </template>
-        </UInput>
-        <UButton id="query" @click="query">Query</UButton>
-      </UFieldGroup>
-
-      <UCollapsible
-        :open="inputPlayer !== '' && inputPlayer === shownPlayer"
+      <UInput
+        id="player"
+        v-model="playerUsername"
         class="mt-2"
+        placeholder="player username"
       >
+        <template v-if="playerUsername" #trailing>
+          <UIcon
+            class="cursor-pointer"
+            name="lucide:x"
+            @click="playerUsername = ''"
+          />
+        </template>
+      </UInput>
+
+      <UCollapsible :open="playerUsername !== ''" class="mt-2">
         <template #content>
           <UProgress v-if="loading !== 0" id="player-stats" />
+          <template v-else-if="player?.ty === 'noPlayer'">
+            No such player <b>{{ playerUsername }}</b>
+          </template>
           <template
-            v-else-if="player !== null && player.playTimes.length === 0"
+            v-else-if="
+              player?.ty === 'success' && player.playTimes.length === 0
+            "
           >
-            <b>{{ shownPlayer }}</b> did not join within this time period
+            <b>{{ playerUsername }}</b> did not join within this time period
           </template>
-          <template v-else-if="player !== null">
-            <b>{{ shownPlayer }}</b> played for <b>{{ playDuration }}</b> within
-            this time period
-          </template>
-          <template v-else-if="shownPlayer !== ''">
-            No such player <b>{{ shownPlayer }}</b>
+          <template
+            v-else-if="player?.ty === 'success' && player.playDuration !== 0"
+          >
+            <b>{{ playerUsername }}</b> played for
+            <b>{{ playDuration }}</b> within this time period
           </template>
         </template>
       </UCollapsible>
@@ -166,21 +154,11 @@ const playDuration = computed(() => {
     <UCard class="content-center">
       <p>Rolling Averages</p>
       <p class="mt-2 text-wrap">
-        <CheckboxButton v-model="shownMovingAverages[0]" @click="updateCounts"
-          >Raw</CheckboxButton
-        >
-        <CheckboxButton v-model="shownMovingAverages[1]" @click="updateCounts"
-          >1h</CheckboxButton
-        >
-        <CheckboxButton v-model="shownMovingAverages[12]" @click="updateCounts"
-          >12h</CheckboxButton
-        >
-        <CheckboxButton v-model="shownMovingAverages[24]" @click="updateCounts"
-          >1d</CheckboxButton
-        >
-        <CheckboxButton v-model="shownMovingAverages[168]" @click="updateCounts"
-          >7d</CheckboxButton
-        >
+        <CheckboxButton v-model="shownMovingAverages[0]">Raw</CheckboxButton>
+        <CheckboxButton v-model="shownMovingAverages[1]">1h</CheckboxButton>
+        <CheckboxButton v-model="shownMovingAverages[12]">12h</CheckboxButton>
+        <CheckboxButton v-model="shownMovingAverages[24]">1d</CheckboxButton>
+        <CheckboxButton v-model="shownMovingAverages[168]">7d</CheckboxButton>
       </p>
     </UCard>
   </section>

@@ -1,82 +1,4 @@
-<script lang="ts">
-import { FetchError } from "ofetch";
-import { now, hhmm } from "~/utils";
-import {
-  countsAPI,
-  type CountsAPI,
-  playerAPI,
-  type PlayerAPI,
-} from "#shared/api.ts";
-// temp value
-export const from = ref(now());
-export const to = ref(now());
-
-export const shownMovingAverages = reactive<Record<MovingAverage, boolean>>({
-  0: true,
-  1: true,
-  12: false,
-  24: false,
-  168: false,
-});
-export const counts = ref(new Map<MovingAverage, CountsAPI>());
-
-export const shownPlayer = ref("");
-export const player = ref<PlayerAPI | null>(null);
-
-export async function updateCounts() {
-  counts.value = new Map(
-    await Promise.all(
-      Object.entries(shownMovingAverages)
-        .filter(([ma, a]) => ma === "0" || a)
-        .map(async ([ma2]) => {
-          const ma = parseInt(ma2) as MovingAverage;
-          const { data } = await useAsyncData(
-            `counts:${from.value.toAbsoluteString()}:${to.value.toAbsoluteString()}:${ma}`,
-            () =>
-              $fetch("/counts", {
-                query: {
-                  from: from.value.toAbsoluteString(),
-                  to: to.value.toAbsoluteString(),
-                  movingAverage: ma,
-                },
-              }).then(countsAPI.de),
-            { deep: false },
-          );
-          return [ma, data.value] as [MovingAverage, CountsAPI];
-        }),
-    ),
-  );
-}
-
-export async function updatePlayer() {
-  try {
-    player.value =
-      shownPlayer.value === ""
-        ? null
-        : (
-            await useAsyncData(
-              `player:${shownPlayer.value}:${from.value.toAbsoluteString()}:${to.value.toAbsoluteString()}`,
-              () =>
-                $fetch(`/player/${shownPlayer.value}`, {
-                  query: {
-                    from: from.value.toAbsoluteString(),
-                    to: to.value.toAbsoluteString(),
-                  },
-                }).then(playerAPI.de),
-              { deep: false },
-            )
-          ).data.value!;
-  } catch (e) {
-    if (e instanceof FetchError && e.status === 404) {
-      player.value = null;
-      return;
-    }
-    throw e;
-  }
-}
-</script>
 <script setup lang="ts">
-/* eslint-disable import/first */
 import { use } from "echarts/core";
 import { LineChart } from "echarts/charts";
 import {
@@ -87,6 +9,7 @@ import {
 import { CanvasRenderer } from "echarts/renderers";
 import VChart, { THEME_KEY } from "vue-echarts";
 import type * as echarts from "echarts";
+import { counts, loading, player, shownMovingAverages } from "~/state.ts";
 
 use([
   GridComponent,
@@ -153,20 +76,21 @@ const series = computed<echarts.LineSeriesOption[]>(() =>
 
 const playTimes = computed<
   [{ name: string; xAxis: Date }, { xAxis: Date }][] | null
->(
-  () =>
-    player.value?.playTimes?.map(({ join, leave: leave2 }) => {
-      const leave = leave2 ?? now();
-      return [
-        {
-          name: `${hhmm(join)} → ${hhmm(leave)}`,
-          xAxis: join.toDate(),
-        },
-        {
-          xAxis: leave.toDate(),
-        },
-      ];
-    }) ?? null,
+>(() =>
+  player.value?.ty === "success" && player.value.playTimes
+    ? player.value.playTimes.map(({ join, leave: leave2 }) => {
+        const leave = leave2 ?? now();
+        return [
+          {
+            name: `${hhmm(join)} → ${hhmm(leave)}`,
+            xAxis: join.toDate(),
+          },
+          {
+            xAxis: leave.toDate(),
+          },
+        ];
+      })
+    : null,
 );
 
 const option = computed<
@@ -217,7 +141,12 @@ const option = computed<
 </script>
 
 <template>
-  <VChart class="chart h-[75dvh]!" :option="option" autoresize />
+  <VChart
+    class="chart h-[75dvh]!"
+    :option="option"
+    autoresize
+    :loading="loading !== 0"
+  />
 </template>
 
 <style scoped></style>

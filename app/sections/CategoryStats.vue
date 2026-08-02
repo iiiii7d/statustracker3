@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { counts } from "~/sections/Chart.vue";
+import { counts } from "~/state.ts";
 import { use } from "echarts/core";
 import { BarChart } from "echarts/charts";
 import { GridComponent, TitleComponent } from "echarts/components";
