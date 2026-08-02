@@ -20,7 +20,7 @@ if (route.path !== "/")
         <RollingAvgCard />
       </section>
       <USeparator class="m-8" />
-      <CategoryStats />
+      <LazyCategoryStats hydrate-on-visible />
     </UMain>
   </UApp>
 </template>
