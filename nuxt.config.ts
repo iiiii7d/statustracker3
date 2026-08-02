@@ -22,6 +22,11 @@ export default defineNuxtConfig({
     },
   },
   css: ["~/assets/style.css"],
+  icon: {
+    clientBundle: {
+      scan: true,
+    },
+  },
 
   nitro: {
     compressPublicAssets: true,
