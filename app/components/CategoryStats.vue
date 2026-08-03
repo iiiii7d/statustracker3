@@ -36,6 +36,7 @@ const option = computed<
 >(() => ({
   title: {
     text: "% of the time players were online",
+    subtext: "based on all timestamps sampled",
     textStyle: {
       color: "#fff",
     },
