@@ -32,7 +32,7 @@ export const shownMovingAverages = reactive<Record<MovingAverage, boolean>>({
 });
 
 export const counts = ref(new Map<MovingAverage, CountsAPI>());
-watch(
+watchDebounced(
   [from, to, shownMovingAverages],
   wrapLoading(async () => {
     if (dateInvalid.value) return;
@@ -57,13 +57,16 @@ watch(
       ),
     );
   }),
+  { debounce: 1000 },
 );
 
 export const playerUsername = ref("");
 export const player = ref<
-  ({ ty: "success" } & PlayerAPI) | { ty: "noPlayer" } | null
+  | ({ ty: "success"; username: string } & PlayerAPI)
+  | { ty: "noPlayer"; username: string }
+  | null
 >(null);
-watch(
+watchDebounced(
   [from, to, playerUsername],
   // eslint-disable-next-line max-statements
   wrapLoading(async () => {
@@ -79,13 +82,18 @@ watch(
           to: to.value!.toAbsoluteString(),
         },
       });
-      player.value = { ty: "success", ...playerAPI.de(data) };
+      player.value = {
+        ty: "success",
+        ...playerAPI.de(data),
+        username: playerUsername.value,
+      };
     } catch (e) {
       if (e instanceof FetchError && e.status === 404) {
-        player.value = { ty: "noPlayer" };
+        player.value = { ty: "noPlayer", username: playerUsername.value };
         return;
       }
       throw e;
     }
   }),
+  { debounce: 1000 },
 );

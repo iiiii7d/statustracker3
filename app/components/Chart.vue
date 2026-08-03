@@ -141,7 +141,7 @@ const option = computed<
 </script>
 
 <template>
-  <div class="h-[75dvh]!">
+  <div class="h-[75svh]!">
     <VChart
       class="chart"
       :option="option"

@@ -45,5 +45,9 @@ export default defineNuxtConfig({
   },
 
   components: ["~/components"],
-  modules: nuxtEslintExists ? ["@nuxt/eslint", "@nuxt/ui"] : ["@nuxt/ui"],
+  modules: [
+    "@nuxt/ui",
+    "@vueuse/nuxt",
+    ...(nuxtEslintExists ? ["@nuxt/eslint"] : []),
+  ],
 });

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { player, playerUsername, loading } from "~/state.ts";
+import { player, playerUsername } from "~/state.ts";
 
 const playDuration = computed(() => {
   if (player.value?.ty !== "success") {
@@ -31,7 +31,11 @@ const playDuration = computed(() => {
 
     <UCollapsible :open="playerUsername !== ''" class="mt-2">
       <template #content>
-        <UProgress v-if="loading !== 0" id="player-stats" />
+        <UProgress
+          v-if="player?.username !== playerUsername"
+          id="player-stats"
+          class="px-8"
+        />
         <template v-else-if="player?.ty === 'noPlayer'">
           No such player <b>{{ playerUsername }}</b>
         </template>

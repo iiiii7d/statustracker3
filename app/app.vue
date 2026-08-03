@@ -12,7 +12,7 @@ if (route.path !== "/")
       <Chart />
       <section
         id="input"
-        class="select-none flex flex-wrap gap-5 justify-center text-center *:grow-3 min-h-[20dvh]"
+        class="select-none flex flex-wrap gap-5 justify-center text-center *:grow-3 min-h-[20svh]"
       >
         <InfoCard />
         <DateRangeCard />
