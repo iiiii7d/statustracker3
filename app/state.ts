@@ -33,7 +33,7 @@ export const shownMovingAverages = reactive<Record<MovingAverage, boolean>>({
 
 export const counts = ref(new Map<MovingAverage, CountsAPI>());
 watch(
-  [from, to],
+  [from, to, shownMovingAverages],
   wrapLoading(async () => {
     if (dateInvalid.value) return;
     counts.value = new Map<MovingAverage, CountsAPI>(
