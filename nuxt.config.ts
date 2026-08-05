@@ -30,12 +30,6 @@ export default defineNuxtConfig({
 
   nitro: {
     compressPublicAssets: true,
-    experimental: {
-      tasks: true,
-    },
-    scheduledTasks: {
-      "* * * * *": ["updateCount", "webhooks"],
-    },
   },
 
   runtimeConfig: {

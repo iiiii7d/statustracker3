@@ -9,6 +9,8 @@ import {
 import { type Migration, Migrator } from "kysely/migration";
 import { types as pgTypes } from "pg";
 import * as dt from "@internationalized/date";
+import config from "#server/utils/config";
+import logger from "#server/utils/logger";
 
 export interface CountTable {
   timestamp: Generated<dt.ZonedDateTime>;
@@ -106,5 +108,6 @@ export async function getDB(): Promise<Kysely<Database>> {
     }
   });
 
+  logger.start("DB ready");
   dbReady = true;
 })();

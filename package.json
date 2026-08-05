@@ -30,6 +30,7 @@
     "consola": "3.4.2",
     "echarts": "6.1.0",
     "kysely": "0.29.4",
+    "node-cron": "^4.6.0",
     "nuxt": "4.5.1",
     "pg": "8.22.0",
     "tailwindcss": "4.3.3",
@@ -54,7 +55,6 @@
     "vue-tsc": "3.3.9"
   },
   "optionalDependencies": {
-    "cron-parser": "5.6.2",
     "discord.js": "14.27.0",
     "puppeteer": "25.4.0"
   },

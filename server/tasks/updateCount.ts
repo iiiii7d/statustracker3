@@ -1,5 +1,8 @@
 import { type Database, getDB } from "#server/db";
 import { sql, type Transaction } from "kysely";
+import logger from "#server/utils/logger";
+import config from "#server/utils/config";
+import { nameToUUID, currentTimestamp, previousTimestamp } from "#server/utils";
 
 async function currentPlayerList(): Promise<string[]> {
   logger.info(`Retrieving current player list from ${config.dynmapLink}`);
@@ -115,22 +118,15 @@ async function closePlayerEntriesIfPaused(trx: Transaction<Database>) {
     .execute();
 }
 
-export default defineTask({
-  meta: {
-    name: "updateCount",
-  },
-  async run() {
-    const playerList = await currentPlayerList();
+export default async function task() {
+  const playerList = await currentPlayerList();
 
-    await (await getDB()).transaction().execute(async (trx) => {
-      await updateCounts(trx, playerList);
+  await (await getDB()).transaction().execute(async (trx) => {
+    await updateCounts(trx, playerList);
 
-      await closePlayerEntriesIfPaused(trx);
+    await closePlayerEntriesIfPaused(trx);
 
-      await updatePlayersJoin(trx, playerList);
-      await updatePlayersLeave(trx, playerList);
-    });
-
-    return { result: "success" };
-  },
-});
+    await updatePlayersJoin(trx, playerList);
+    await updatePlayersLeave(trx, playerList);
+  });
+}

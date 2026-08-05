@@ -67,4 +67,4 @@ export function getConfig(): Config {
   logger.fatal(`Could not find config at ${configPath}`);
   process.exit(1);
 }
-export const config = getConfig();
+export default getConfig();
