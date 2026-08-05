@@ -43,14 +43,12 @@ export type CategoriesAPI = Record<string, { colour: string; uuids: string[] }>;
 
 export type CountsAPI = {
   timestamp: dt.ZonedDateTime;
-  all: number;
-  [x: `cat_${string}`]: number;
+  values: Record<"all" | string, number>;
 }[];
 
 export type CountsAPIJson = {
   timestamp: string;
-  all: number;
-  [x: `cat_${string}`]: number;
+  values: Record<"all" | string, number>;
 }[];
 
 export const countsAPI = {

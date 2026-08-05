@@ -26,14 +26,22 @@ async function updateCounts(trx: Transaction<Database>, playerList: string[]) {
     .insertInto("counts")
     .values({
       timestamp: currentTimestamp,
-      all: playerList.length,
-      ...Object.fromEntries(
-        Object.entries(config.categories).map(([cat, { uuids }]) => [
-          `cat_${cat}`,
-          playerList.filter((a) => uuids.includes(a)).length,
-        ]),
-      ),
+      category: "all",
+      value: playerList.length,
     })
+    .execute();
+  if (Object.keys(config.categories).length === 0) {
+    return;
+  }
+  await trx
+    .insertInto("counts")
+    .values(
+      Object.entries(config.categories).map(([cat, { uuids }]) => ({
+        timestamp: currentTimestamp,
+        category: cat,
+        value: playerList.filter((a) => uuids.includes(a)).length,
+      })),
+    )
     .execute();
 }
 

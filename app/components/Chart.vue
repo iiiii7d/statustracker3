@@ -50,28 +50,22 @@ const series = computed<echarts.LineSeriesOption[]>(() =>
   Array.from(counts.value.entries())
     .sort(([a], [b]) => b - a)
     .filter(([ma]) => ma !== 0 || shownMovingAverages[0])
-    .flatMap(([ma, m], i) => {
-      const allLine = generateLine(
-        "all",
-        "#fff",
-        m.map((a) => [a.timestamp.toDate(), a.all] as [Date, number]),
-        i,
-        ma,
-      );
-      const catLines = Object.entries(categories.value!).map(
-        ([cat, { colour }]) =>
-          generateLine(
-            cat,
-            colour,
-            m.map(
-              (a) => [a.timestamp.toDate(), a[`cat_${cat}`]] as [Date, number],
-            ),
-            i,
-            ma,
+    .flatMap(([ma, m], i) =>
+      [
+        ["all", { colour: "#fff" }] as const,
+        ...Object.entries(categories.value!),
+      ].map(([cat, { colour }]) =>
+        generateLine(
+          cat,
+          colour,
+          m.map(
+            (a) => [a.timestamp.toDate(), a.values[cat] ?? 0] as [Date, number],
           ),
-      );
-      return [allLine, ...catLines];
-    }),
+          i,
+          ma,
+        ),
+      ),
+    ),
 );
 
 const playTimes = computed<

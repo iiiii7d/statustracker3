@@ -1,9 +1,9 @@
-import { type CountTable, getDB } from "#server/db";
+import { getDB } from "#server/db";
 import { z } from "zod/v4";
-import { type Selectable, sql } from "kysely";
+import { sql } from "kysely";
 import * as dt from "@internationalized/date";
 import { now } from "~/utils";
-import { countsAPI, type CountsAPIJson } from "#shared/api.ts";
+import { type CountsAPI, countsAPI, type CountsAPIJson } from "#shared/api.ts";
 
 const schema = z
   .object({
@@ -27,7 +27,6 @@ const schema = z
     { error: "`to` is earlier than `from`" },
   );
 
-// eslint-disable-next-line max-lines-per-function
 export default defineEventHandler(async (event): Promise<CountsAPIJson> => {
   logger.verbose(`Processing ${event.path}`);
   const db = await getDB();
@@ -39,44 +38,41 @@ export default defineEventHandler(async (event): Promise<CountsAPIJson> => {
   const ma = `${movingAverage} hours`;
 
   const result = (await db
-    .with("temp", (qc) =>
+    .with("moving_avgs", (qc) =>
       qc
         .selectFrom("counts")
-        .select("timestamp")
+        .select(["timestamp", "category"])
         .select(
           movingAverage === 0
-            ? "all"
-            : (sql<number>`(AVG("all") OVER (ORDER BY timestamp RANGE BETWEEN ${ma} PRECEDING AND ${ma} FOLLOWING))::real`.as(
-                "all",
-              ) as never),
-        )
-        .select(
-          Object.keys(config.categories).map((n) => {
-            if (movingAverage === 0) {
-              return `cat_${n}`;
-            }
-            const catRef = sql.ref(`cat_${n}`);
-            return sql<number>`(AVG(${catRef}) OVER (ORDER BY timestamp RANGE BETWEEN ${ma} PRECEDING AND ${ma} FOLLOWING))::real`.as(
-              `cat_${n}`,
-            );
-          }) as never,
-        )
-        .select([
-          (eb) => eb.fn.countAll().over().as("count"),
-          sql<number>`ROW_NUMBER() OVER (ORDER BY timestamp)`.as("row_n"),
-        ])
-        .where((eb) => eb.between("timestamp", from, to))
-        .orderBy("timestamp", "asc"),
+            ? "value"
+            : sql<number>`(AVG(value) OVER (PARTITION BY category ORDER BY timestamp RANGE BETWEEN ${ma} PRECEDING AND ${ma} FOLLOWING))::real`.as(
+                "value",
+              ),
+        ),
     )
-    .selectFrom("temp")
-    .select([
-      "timestamp",
-      "all",
-      ...Object.keys(config.categories).map((n) => `cat_${n}`),
-    ])
+    .with("aggregation", (qc) =>
+      qc
+        .selectFrom("moving_avgs")
+        .select("timestamp")
+        .select((eb) =>
+          eb.fn.agg("json_object_agg", ["category", "value"]).as("values"),
+        )
+        .select((eb) => eb.fn.countAll().over().as("count"))
+        .select((eb) =>
+          eb.fn
+            .agg("row_number")
+            .over((ob) => ob.orderBy("timestamp"))
+            .as("row_n"),
+        )
+        .groupBy("timestamp")
+        .having((eb) => eb.between("timestamp", from, to)),
+    )
+    .selectFrom("aggregation")
+    .select(["timestamp", "values"])
     .where(
-      sql<boolean>`count <= ${config.countsApproxMaxLength} OR MOD(row_n, (count/${config.countsApproxMaxLength})) = 0`,
+      sql<boolean>`"count" <= ${config.countsApproxMaxLength} OR MOD(row_n, ("count"/${config.countsApproxMaxLength})) = 0`,
     )
-    .execute()) as Selectable<CountTable>[];
+    .orderBy("timestamp", "asc")
+    .execute()) as CountsAPI;
   return countsAPI.ser(result);
 });

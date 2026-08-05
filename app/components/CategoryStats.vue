@@ -15,14 +15,16 @@ const { data: categories } = await useFetch("/categories");
 const percentages = computed(() => {
   const count2 = counts.value.get(0);
   if (count2 === undefined) return [];
-  const columns: ("all" | `cat_${string}`)[] = [
+  const columns: ("all" | string)[] = [
     "all",
-    ...Object.keys(categories.value!).map((c) => `cat_${c}` as const),
+    ...Object.keys(categories.value!),
   ];
   return columns.map(
     (column) =>
       Math.round(
-        (count2.filter((c) => c[column]).length / count2.length) * 100 * 100,
+        (count2.filter((c) => c.values[column]).length / count2.length) *
+          100 *
+          100,
       ) / 100,
   );
 });
