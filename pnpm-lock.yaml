@@ -37,7 +37,7 @@ importers:
         specifier: 0.29.4
         version: 0.29.4
       node-cron:
-        specifier: ^4.6.0
+        specifier: 4.6.0
         version: 4.6.0
       nuxt:
         specifier: 4.5.1
@@ -52,7 +52,7 @@ importers:
         specifier: 2.8.1
         version: 2.8.1
       vue:
-        specifier: ^3.5.40
+        specifier: 3.5.40
         version: 3.5.40(typescript@6.0.3)
       vue-echarts:
         specifier: 8.0.1
