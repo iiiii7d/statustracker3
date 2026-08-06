@@ -9,7 +9,7 @@ if (route.path !== "/")
 <template>
   <UApp>
     <UMain class="mx-8">
-      <Chart />
+      <MainChart />
       <section
         id="input"
         class="select-none flex flex-wrap gap-5 justify-center text-center *:grow-3 min-h-[20svh]"
@@ -20,7 +20,7 @@ if (route.path !== "/")
         <RollingAvgCard />
       </section>
       <USeparator class="m-8" />
-      <LazyCategoryStats hydrate-on-visible />
+      <LazyPercentOnlineChart hydrate-on-visible />
     </UMain>
   </UApp>
 </template>

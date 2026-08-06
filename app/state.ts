@@ -1,11 +1,13 @@
 import {
   countsAPI,
   type CountsAPI,
+  type PercentOnlineAPI,
   playerAPI,
   type PlayerAPI,
 } from "#shared/api.ts";
 import { FetchError } from "ofetch";
 import type * as dt from "@internationalized/date";
+import type { MovingAverage } from "#shared/mainChart.ts";
 
 export const loading = ref(0);
 export const wrapLoading =
@@ -31,7 +33,7 @@ export const shownMovingAverages = reactive<Record<MovingAverage, boolean>>({
   168: false,
 });
 
-export const counts = ref(new Map<MovingAverage, CountsAPI>());
+export const counts = shallowRef(new Map<MovingAverage, CountsAPI>());
 watchDebounced(
   [from, to, shownMovingAverages],
   wrapLoading(async () => {
@@ -60,8 +62,23 @@ watchDebounced(
   { debounce: 1000 },
 );
 
+export const percentages = shallowRef<PercentOnlineAPI>({});
+watchDebounced(
+  [from, to],
+  wrapLoading(async () => {
+    if (dateInvalid.value) return;
+    percentages.value = await $fetch("/percentOnline", {
+      query: {
+        from: from.value!.toAbsoluteString(),
+        to: to.value!.toAbsoluteString(),
+      },
+    });
+  }),
+  { debounce: 1000 },
+);
+
 export const playerUsername = ref("");
-export const player = ref<
+export const player = shallowRef<
   | ({ ty: "success"; username: string } & PlayerAPI)
   | { ty: "noPlayer"; username: string }
   | null

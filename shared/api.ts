@@ -65,3 +65,5 @@ export const countsAPI = {
     }));
   },
 } as const;
+
+export type PercentOnlineAPI = Record<"all" | string, number>;
