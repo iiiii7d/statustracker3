@@ -27,17 +27,15 @@ const schema = z
     { error: "`to` is earlier than `from`" },
   );
 
-export default defineEventHandler(async (event): Promise<CountsAPIJson> => {
-  logger.verbose(`Processing ${event.path}`);
+export async function getCounts(
+  from: dt.ZonedDateTime,
+  to: dt.ZonedDateTime,
+  movingAverage: number,
+): Promise<CountsAPI> {
   const db = await getDB();
-
-  const { from, to, movingAverage } = await getValidatedQuery(event, (body) =>
-    schema.parse(body),
-  );
-
   const ma = `${movingAverage} hours`;
 
-  const result = (await db
+  return await db
     .with("moving_avgs", (qc) =>
       qc
         .selectFrom("counts")
@@ -55,7 +53,10 @@ export default defineEventHandler(async (event): Promise<CountsAPIJson> => {
         .selectFrom("moving_avgs")
         .select("timestamp")
         .select((eb) =>
-          eb.fn.agg("json_object_agg", ["category", "value"]).as("values"),
+          eb.fn
+            .agg("json_object_agg", ["category", "value"])
+            .$castTo<Record<"all" | string, number>>()
+            .as("values"),
         )
         .select((eb) => eb.fn.countAll().over().as("count"))
         .select((eb) =>
@@ -73,6 +74,16 @@ export default defineEventHandler(async (event): Promise<CountsAPIJson> => {
       sql<boolean>`"count" <= ${config.countsApproxMaxLength} OR MOD(row_n, ("count"/${config.countsApproxMaxLength})) = 0`,
     )
     .orderBy("timestamp", "asc")
-    .execute()) as CountsAPI;
+    .execute();
+}
+
+export default defineEventHandler(async (event): Promise<CountsAPIJson> => {
+  logger.verbose(`Processing ${event.path}`);
+
+  const { from, to, movingAverage } = await getValidatedQuery(event, (body) =>
+    schema.parse(body),
+  );
+  const result = await getCounts(from, to, movingAverage);
+
   return countsAPI.ser(result);
 });
