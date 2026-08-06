@@ -3,7 +3,7 @@ import type { Database } from "#server/db";
 import { type Kysely, sql } from "kysely";
 
 export default {
-  // eslint-disable-next-line max-lines-per-function,max-statements
+  // eslint-disable-next-line max-lines-per-function
   async up(db: Kysely<Database>): Promise<void> {
     logger.info("Runnning migrations for v4.0.0");
 

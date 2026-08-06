@@ -1,5 +1,5 @@
 import { sql } from "kysely";
-import * as dt from "@internationalized/date";
+import type * as dt from "@internationalized/date";
 import logger from "#server/utils/logger";
 
 export const currentTimestamp = sql<dt.ZonedDateTime>`date_trunc('minute', now())`;
@@ -23,5 +23,3 @@ export async function nameToUUID(name: string): Promise<string | null> {
   logger.verbose(`Found that \`${name}\` has UUID \`${uuid}\``);
   return uuid;
 }
-
-export const now = () => dt.now(dt.getLocalTimeZone());

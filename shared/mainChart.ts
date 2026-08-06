@@ -1,5 +1,6 @@
 import type * as echarts from "echarts";
 import type { CategoriesAPI, CountsAPI, PlayerAPI } from "#shared/api.ts";
+import now from "#shared/now.ts";
 
 export const movingAverages = {
   0: "Raw",

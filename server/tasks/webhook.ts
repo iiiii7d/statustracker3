@@ -1,6 +1,6 @@
 import { AttachmentBuilder } from "discord.js";
 import puppeteer from "puppeteer";
-import { now } from "#server/utils";
+import now from "#shared/now";
 import config from "#server/utils/config";
 
 // eslint-disable-next-line max-lines-per-function,max-statements

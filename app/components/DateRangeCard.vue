@@ -2,7 +2,7 @@
 import { from, to, dateInvalid } from "~/state.ts";
 import * as dt from "@internationalized/date";
 import { z } from "zod/v4";
-import { now } from "~/utils";
+import now from "#shared/now";
 
 const { locale } = new Intl.NumberFormat().resolvedOptions();
 

@@ -2,7 +2,7 @@ import { z } from "zod/v4";
 import { sql } from "kysely";
 import * as dt from "@internationalized/date";
 import { getDB } from "#server/db";
-import { now } from "#server/utils";
+import now from "#shared/now";
 import { playerAPI, type PlayerAPIJson } from "#shared/api.ts";
 
 const schema = z
