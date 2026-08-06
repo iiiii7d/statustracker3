@@ -33,13 +33,6 @@ export default {
       .addPrimaryKeyConstraint("players_pkey", ["uuid", "join"])
       .execute();
 
-    await db.schema
-      .createTable("webhooks")
-      .ifNotExists()
-      .addColumn("id", "varchar", (col) => col.primaryKey())
-      .addColumn("nextUpdate", "timestamptz", (col) => col.notNull())
-      .execute();
-
     if (
       (await db.introspection.getTables()).filter(
         (table) => table.name === "version_v3",
@@ -84,19 +77,8 @@ export default {
           .select(["uuid", "join", "leave"]),
       )
       .execute();
-
-    await db
-      .insertInto("webhooks")
-      .columns(["id", "nextUpdate"])
-      .expression((eb) =>
-        eb
-          // @ts-expect-error
-          .selectFrom("webhooks_v3")
-          // @ts-expect-error
-          .select(["id", "nextUpdate"]),
-      )
-      .execute();
   },
+
   async down(db: Kysely<Database>): Promise<void> {
     await db.schema
       .createTable("counts_bak")
@@ -106,12 +88,7 @@ export default {
       .createTable("players_bak")
       .as(db.selectFrom("players").selectAll())
       .execute();
-    await db.schema
-      .createTable("webhooks_bak")
-      .as(db.selectFrom("webhooks").selectAll())
-      .execute();
     await db.schema.dropTable("counts").ifExists().execute();
     await db.schema.dropTable("players").ifExists().execute();
-    await db.schema.dropTable("webhooks").ifExists().execute();
   },
 } as Migration;

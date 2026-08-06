@@ -24,6 +24,7 @@ export default {
       .execute();
     await db.schema
       .createTable("webhooks_v3")
+      // @ts-expect-error
       .as(db.selectFrom("webhooks").selectAll())
       .execute();
     await db.schema
@@ -37,6 +38,7 @@ export default {
     await db.schema.dropTable("webhooks").execute();
     await db.schema.dropTable("version").execute();
   },
+
   async down(db: Kysely<Database>): Promise<void> {
     await db.schema
       .createTable("counts")

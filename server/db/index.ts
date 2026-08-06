@@ -24,15 +24,9 @@ export interface PlayerTable {
   leave: dt.ZonedDateTime | null;
 }
 
-export interface WebhooksTable {
-  id: string;
-  nextUpdate: dt.ZonedDateTime;
-}
-
 export interface Database {
   counts: CountTable;
   players: PlayerTable;
-  webhooks: WebhooksTable;
 }
 
 pgTypes.setTypeParser(pgTypes.builtins.TIMESTAMPTZ, (val) =>
@@ -97,16 +91,6 @@ export async function getDB(): Promise<Kysely<Database>> {
     logger.fatal("Failed to migrate", error);
     process.exit(1);
   }
-
-  await db.transaction().execute(async (trx) => {
-    // delete old webhook schedules
-    if (config.webhooks !== undefined) {
-      await trx
-        .deleteFrom("webhooks")
-        .where("id", "not in", Object.keys(config.webhooks.schedules))
-        .execute();
-    }
-  });
 
   logger.start("DB ready");
   dbReady = true;
