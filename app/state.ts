@@ -59,7 +59,7 @@ watchDebounced(
       ),
     );
   }),
-  { debounce: 1000 },
+  { debounce: 1000, immediate: true },
 );
 
 export const percentages = shallowRef<PercentOnlineAPI>({});
@@ -74,7 +74,7 @@ watchDebounced(
       },
     });
   }),
-  { debounce: 1000 },
+  { debounce: 1000, immediate: true },
 );
 
 export const playerUsername = ref("");
@@ -112,5 +112,5 @@ watchDebounced(
       throw e;
     }
   }),
-  { debounce: 1000 },
+  { debounce: 1000, immediate: true },
 );
