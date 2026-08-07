@@ -56,7 +56,7 @@
   },
   "optionalDependencies": {
     "discord.js": "14.27.0",
-    "puppeteer": "25.4.0"
+    "puppeteer": "25.5.0"
   },
   "overrides": {
     "readdir-glob": "3.0.0",
