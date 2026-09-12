@@ -32,7 +32,7 @@ ENV MISE_ENV=""
 RUN curl https://mise.run | sh
 
 COPY .config .config
-RUN mise trust && mise install --system
+RUN mise trust && mise install && eval "$(mise activate bash)"
 
 ENV PUPPETEER_SKIP_DOWNLOAD="true"
 
